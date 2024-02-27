@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-    glPolygonMode(GL_FRONT, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     glutMainLoop();
 
@@ -41,8 +41,8 @@ void renderScene() {
               0.0, 0.0, 0.0,
               0.0f, 1.0f, 0.0f);
 
-    Model box("plane.3d");
-    box.draw();
+    Model plane("plane.3d");
+    plane.draw();
 
     glutSwapBuffers();
 }

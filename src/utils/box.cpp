@@ -10,7 +10,7 @@ Box::Box(float size, int divisions) : Model(createBox(size, divisions)) {}
 
 vector<Model> createBox(float size, int divisions)
 {
-    auto halfSize= size / 2;
+    float halfSize = size / 2;
 
     Plane top(size, divisions);
     top.rotate({0, 1, 0}, M_PI / 2);
@@ -31,6 +31,5 @@ vector<Model> createBox(float size, int divisions)
     back.rotate({1, 0, 0}, -M_PI / 2);
     back.translate({0, 0, -halfSize});
 
-    // return Model({top, bottom, left, right, front, back});
     return vector<Model>{top, bottom, left, right, front, back};
 }

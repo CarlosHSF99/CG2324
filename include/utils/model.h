@@ -1,5 +1,5 @@
-#ifndef GENERATOR_MODEL_H
-#define GENERATOR_MODEL_H
+#ifndef CG2324_MODEL_H
+#define CG2324_MODEL_H
 
 
 #include <string>
@@ -33,12 +33,6 @@ public:
 
     void scale(const std::tuple<float, float, float> &factors);
 
-    [[nodiscard]] Model translateImmutable(const Vector3 &vector) const;
-
-    [[nodiscard]] Model rotateImmutable(const Vector3 &vector, float angle);
-
-    [[nodiscard]] Model scaleImmutable(const std::tuple<float, float, float> &factors);
-
     Model operator+(const Model &model) const;
 
     friend std::istream &operator>>(std::istream &is, Model &model);
@@ -47,4 +41,4 @@ public:
 };
 
 
-#endif //GENERATOR_MODEL_H
+#endif //CG2324_MODEL_H

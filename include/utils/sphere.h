@@ -1,5 +1,5 @@
-#ifndef GENERATOR_SPHERE_H
-#define GENERATOR_SPHERE_H
+#ifndef CG2324_SPHERE_H
+#define CG2324_SPHERE_H
 
 
 #include "model.h"
@@ -11,4 +11,4 @@ public:
 };
 
 
-#endif //GENERATOR_SPHERE_H
+#endif //CG2324_SPHERE_H

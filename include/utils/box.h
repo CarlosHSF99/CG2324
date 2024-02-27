@@ -1,5 +1,5 @@
-#ifndef GENERATOR_BOX_H
-#define GENERATOR_BOX_H
+#ifndef CG2324_BOX_H
+#define CG2324_BOX_H
 
 
 #include "model.h"
@@ -11,4 +11,4 @@ public:
 };
 
 
-#endif //GENERATOR_BOX_H
+#endif //CG2324_BOX_H
