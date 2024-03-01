@@ -1,10 +1,7 @@
 #include <iostream>
 #include <GL/glut.h>
-#include <fstream>
 #include <cmath>
 #include "utils/model.h"
-
-using std::cout, std::endl, std::ifstream;
 
 void renderScene();
 void changeSize(int w, int h);
@@ -41,8 +38,8 @@ void renderScene() {
               0.0, 0.0, 0.0,
               0.0f, 1.0f, 0.0f);
 
-    Model box("plane.3d");
-    box.draw();
+    Model model("model.3d");
+    model.draw();
 
     glutSwapBuffers();
 }

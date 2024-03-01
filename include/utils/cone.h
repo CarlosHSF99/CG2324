@@ -7,7 +7,7 @@
 class Cone : public Model
 {
 public:
-    Cone(float radius, int slices, int stacks);
+    Cone(float radius, float height, int slices, int stacks);
 };
 
 
