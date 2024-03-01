@@ -1,5 +1,5 @@
-#ifndef GENERATOR_CONE_H
-#define GENERATOR_CONE_H
+#ifndef CG2324_CONE_H
+#define CG2324_CONE_H
 
 
 #include "model.h"
@@ -11,4 +11,4 @@ public:
 };
 
 
-#endif //GENERATOR_CONE_H
+#endif //CG2324_CONE_H

@@ -1,5 +1,5 @@
-#ifndef GENERATOR_POINT3_H
-#define GENERATOR_POINT3_H
+#ifndef CG2324_POINT3_H
+#define CG2324_POINT3_H
 
 
 #include <ostream>
@@ -13,9 +13,6 @@ struct Point3
 
     Point3(float x, float y, float z);
 
-    // provavelmente remover
-    Point3 &operator=(const Point3 &other) noexcept;
-
     Point3 operator+(const Vector3 &vector) const;
 
     Point3 operator+(const std::tuple<float, float, float> &vector) const;
@@ -24,4 +21,4 @@ struct Point3
 };
 
 
-#endif //GENERATOR_POINT3_H
+#endif //CG2324_POINT3_H

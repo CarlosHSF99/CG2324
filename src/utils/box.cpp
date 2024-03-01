@@ -31,6 +31,5 @@ vector<Model> createBox(float size, int divisions)
     back.rotate({1, 0, 0}, -M_PI_2);
     back.translate({0, 0, -halfSize});
 
-    // return Model({top, bottom, left, right, front, back});
     return vector<Model>{top, bottom, left, right, front, back};
 }

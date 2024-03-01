@@ -1,5 +1,5 @@
-#ifndef GENERATOR_PLANE_H
-#define GENERATOR_PLANE_H
+#ifndef CG2324_PLANE_H
+#define CG2324_PLANE_H
 
 
 #include "model.h"
@@ -11,4 +11,4 @@ public:
 };
 
 
-#endif //GENERATOR_PLANE_H
+#endif //CG2324_PLANE_H
