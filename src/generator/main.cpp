@@ -2,6 +2,8 @@
 #include <fstream>
 #include "utils/plane.h"
 #include "utils/box.h"
+#include "utils/sphere.h"
+#include "utils/cone.h"
 
 using std::cout, std::endl, std::string, std::ofstream, std::ifstream, std::tuple;
 
@@ -20,9 +22,18 @@ int main(int argc, char **argv)
         Box box(size, divisions);
         box.writeToFile(argv[4]);
     } else if (type == "sphere") {
-        cout << "implement sphere" << endl;
+        auto radius = std::stof(argv[2]);
+        auto slices = std::stoi(argv[3]);
+        auto stacks = std::stoi(argv[4]);
+        Sphere sphere(radius, slices, stacks);
+        sphere.writeToFile(argv[5]);
     } else if (type == "cone") {
-        cout << "implement cone" << endl;
+        auto radius = std::stof(argv[2]);
+        auto height = std::stof(argv[3]);
+        auto slices = std::stoi(argv[4]);
+        auto stacks = std::stoi(argv[5]);
+        Cone cone(radius, height, slices, stacks);
+        cone.writeToFile(argv[6]);
     } else {
         cout << "Invalid type" << endl;
     }
