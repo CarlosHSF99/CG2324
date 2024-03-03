@@ -2,7 +2,7 @@
 #include <GL/glut.h>
 #include <cmath>
 #include "utils/model.h"
-#include "tinyxml2.h"
+#include "deps/tinyxml2.h"
 
 using namespace tinyxml2;
 
