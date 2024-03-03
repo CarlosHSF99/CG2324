@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     int width, height;
 
     XMLDocument doc;
-    if (doc.LoadFile("example.xml") == XML_SUCCESS) {
+    if (doc.LoadFile(argv[1]) == XML_SUCCESS) {
         XMLElement *worldElement = doc.FirstChildElement("world");
         if (worldElement) {
             XMLElement *windowElement = worldElement->FirstChildElement("window");
