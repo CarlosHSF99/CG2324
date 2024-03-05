@@ -97,6 +97,24 @@ int main(int argc, char **argv)
     return 1;
 }
 
+void drawAxis(){
+    glBegin(GL_LINES);
+    // X Axis in red
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(-100.0f, 0.0f, 0.0f);
+    glVertex3f( 100.0f, 0.0f, 0.0f);
+    // Y Axis in Green
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, -100.0f, 0.0f);
+    glVertex3f(0.0f, 100.0f, 0.0f);
+    // Z Axis in Blue
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f, 0.0f, -100.0f);
+    glVertex3f(0.0f, 0.0f, 100.0f);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glEnd();
+}
+
 void renderScene()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -106,6 +124,7 @@ void renderScene()
               lookAtX, lookAtY, lookAtZ,
               upX, upY, upZ);
 
+    drawAxis();
     for (const auto &model: models) {
         model.draw();
     }
