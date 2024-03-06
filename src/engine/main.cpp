@@ -156,42 +156,42 @@ void changeSize(int w, int h)
 void processNormalKeys(unsigned char key, int xx, int yy)
 {
     switch (key) {
-        case 27:
+        case 27: // Quit - ESC Key
             exit(0);
-        case 'w':
+        case 'w': // Slow pitch up
             pitch += 0.01;
             break;
-        case 'W':
+        case 'W': // Fast pitch up
             pitch += 0.1;
             break;
-        case 'a':
+        case 'a': // Slow yaw left
             yaw -= 0.01;
             break;
-        case 'A':
+        case 'A': // Fast yaw left
             yaw -= 0.1;
             break;
-        case 's':
+        case 's': // Slow pitch down
             pitch -= 0.01;
             break;
-        case 'S':
+        case 'S': // Fast pitch down
             pitch -= 0.1;
             break;
-        case 'd':
+        case 'd': // Slow yaw right
             yaw += 0.01;
             break;
-        case 'D':
+        case 'D': // Fast yaw right
             yaw += 0.1;
             break;
-        case 'j':
+        case 'j': // Slow zoom out
             radius += 0.01;
             break;
-        case 'J':
+        case 'J': // Fast zoom out
             radius += 0.1;
             break;
-        case 'k':
+        case 'k': // Slow zoom in
             radius -= 0.01;
             break;
-        case 'K':
+        case 'K': // Fast zoom in
             radius -= 0.1;
             break;
         default:
