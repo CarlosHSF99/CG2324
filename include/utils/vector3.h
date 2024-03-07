@@ -5,7 +5,7 @@
 class Vector3
 {
 public:
-    const float x, y, z;
+    float x, y, z;
 
 public:
     Vector3() : x(0), y(0), z(0) {}

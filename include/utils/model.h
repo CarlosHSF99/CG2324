@@ -31,7 +31,7 @@ public:
 
     void rotate(const Vector3 &vector, float angle);
 
-    void scale(const std::tuple<float, float, float> &factors);
+    void scale(const Vector3& vector);
 
     Model operator+(const Model &model) const;
 

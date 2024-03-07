@@ -6,7 +6,21 @@
 
 using namespace tinyxml2;
 
+struct Transformation {
+    const char* type;
+    Vector3 vector;
+    float angle;
+};
+
+struct Group {
+    std::vector<Transformation> transformations;
+    std::vector<Model> models;
+    std::vector<Group> nestedGroups;
+};
+
 void renderScene();
+
+void parseGroup(XMLElement* groupElement, Group &group, const std::vector<Transformation> &accumulatedTransformations);
 
 void changeSize(int w, int h);
 
@@ -16,7 +30,7 @@ float positionX, positionY, positionZ;
 float lookAtX, lookAtY, lookAtZ;
 float upX, upY, upZ;
 float fov, near, far;
-std::vector<Model> models;
+Group rootGroup;
 
 int main(int argc, char **argv)
 {
@@ -60,17 +74,9 @@ int main(int argc, char **argv)
                 }
             }
 
-            XMLElement *groupElement = worldElement->FirstChildElement("group");
-            if (groupElement) {
-                XMLElement *modelsElement = groupElement->FirstChildElement("models");
-                if (modelsElement) {
-                    XMLElement *modelElement = modelsElement->FirstChildElement("model");
-                    while (modelElement) {
-                        const char *file = modelElement->Attribute("file");
-                        models.emplace_back(file);
-                        modelElement = modelElement->NextSiblingElement("model");
-                    }
-                }
+            XMLElement *rootGroupElement = worldElement->FirstChildElement("group");
+            if(rootGroupElement){
+                parseGroup(rootGroupElement, rootGroup, {});
             }
         }
     } else {
@@ -99,8 +105,19 @@ int main(int argc, char **argv)
     return 1;
 }
 
+void renderGroups(const std::vector<Group> &groups){
+    for (const auto &group : groups){
+        for(const auto &model : group.models){
+            model.draw();
+        }
+
+        renderGroups(group.nestedGroups);
+    }
+}
+
 void renderScene()
 {
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
@@ -109,9 +126,11 @@ void renderScene()
               upX, upY, upZ);
 
     drawAxis();
-    for (const auto &model: models) {
+    for (const auto &model: rootGroup.models) {
         model.draw();
     }
+
+    renderGroups(rootGroup.nestedGroups);
 
     glutSwapBuffers();
 }
@@ -164,4 +183,85 @@ void drawAxis()
 
     // restore previous color
     glColor4fv(currentColor);
+}
+
+void applyTransformations(const std::vector<Transformation> &transformations, Model &model){
+    std::cout << "applyTransformation called\n" << std::endl;
+
+    for(const auto& t : transformations){
+        std::cout << "1 transformation applied" << std::endl;
+        std::cout << "O tipo da transformação é: " << t.type << std::endl;
+
+        if(strcmp(t.type, "translate") == 0){
+            std::cout << "Os valores do translate são " << t.vector.x << " - " << t.vector.y << " - " << t.vector.z << std::endl;
+            model.translate(t.vector);
+        }
+        else if(strcmp(t.type, "scale") == 0){
+            model.scale(t.vector);
+        }
+        else if(strcmp(t.type, "rotate") == 0){
+            model.rotate(t.vector, t.angle);
+        }
+    }
+}
+
+void parseTranformations(XMLElement *transformElement, std::vector<Transformation> &transformations){
+    std::cout << "parseTransformations called" << std::endl;
+    XMLElement *childElement = transformElement->FirstChildElement();
+    while(childElement){
+        float x, y, z;
+        Transformation transform;
+        transform.type = childElement->Value();
+        if(strcmp(transform.type, "rotate") == 0){
+            childElement->QueryFloatAttribute("angle", &transform.angle);
+        }
+
+        childElement->QueryFloatAttribute("x", &x);
+        childElement->QueryFloatAttribute("y", &y);
+        childElement->QueryFloatAttribute("z", &z);
+        Vector3 vector1(x, y, z);
+        transform.vector = vector1;
+
+        transformations.emplace_back(transform);
+
+        childElement = childElement->NextSiblingElement();
+        
+    }
+}
+
+void parseModels(XMLElement* modelsElement, std::vector<Model> &models, const std::vector<Transformation> &accumulatedTransformations){
+    std::cout << "parseModels called" << std::endl;
+
+    XMLElement* modelElement = modelsElement->FirstChildElement("model");
+    while(modelElement){
+        const char* file = modelElement->Attribute("file");
+        Model model(file);
+        applyTransformations(accumulatedTransformations, model);
+        models.emplace_back(model);
+        modelElement = modelElement->NextSiblingElement("model");
+    }
+}
+
+void parseGroup(XMLElement* groupElement, Group &group, const std::vector<Transformation> &accumulatedTransformations){
+    std::cout << "\nparseGroup called" << std::endl;
+
+    XMLElement* childElement = groupElement->FirstChildElement();
+    while (childElement) {
+        const char* elementName = childElement->Value();
+        if (strcmp(elementName, "group") == 0) {
+            Group nestedGroup;
+            parseGroup(childElement, nestedGroup, group.transformations);
+            group.nestedGroups.emplace_back(nestedGroup);
+        }
+        else if(strcmp(elementName, "transform") == 0){
+            std::vector<Transformation> localTransformations = accumulatedTransformations;
+            parseTranformations(childElement, localTransformations);
+            group.transformations = localTransformations;
+        }
+        else if(strcmp(elementName, "models") == 0){
+            parseModels(childElement, group.models, group.transformations);
+        }
+
+        childElement = childElement->NextSiblingElement();
+    }
 }

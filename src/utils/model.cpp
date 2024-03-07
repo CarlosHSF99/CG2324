@@ -79,12 +79,10 @@ void Model::rotate(const Vector3 &v, float angle)
     vertices = std::move(rotateVertices);
 }
 
-void Model::scale(const tuple<float, float, float> &factors)
-{
-    auto [sx, sy, sz] = factors;
+void Model::scale(const Vector3& factors) {
     vector<Point3> scaledVertices;
-    for (const auto &[x, y, z]: vertices) {
-        scaledVertices.emplace_back(x * sx, y * sy, z * sz);
+    for (const auto& [x, y, z] : vertices) {
+        scaledVertices.emplace_back(x * factors.x, y * factors.y, z * factors.z);
     }
     vertices = std::move(scaledVertices);
 }
