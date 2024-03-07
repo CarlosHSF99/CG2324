@@ -6,9 +6,13 @@
 
 using namespace tinyxml2;
 
+using std::cos, std::sin, std::sqrt, std::atan2, std::asin;
+
 void renderScene();
 
 void changeSize(int w, int h);
+
+void processNormalKeys(unsigned char key, int xx, int yy);
 
 void drawAxis();
 
@@ -16,6 +20,8 @@ float positionX, positionY, positionZ;
 float lookAtX, lookAtY, lookAtZ;
 float upX, upY, upZ;
 float fov, near, far;
+float pitch, yaw;
+float radius;
 std::vector<Model> models;
 
 int main(int argc, char **argv)
@@ -77,6 +83,10 @@ int main(int argc, char **argv)
         std::cerr << "Failed to load file." << std::endl;
     }
 
+    radius = (float) sqrt(pow(positionX - lookAtX, 2) + pow(positionY - lookAtY, 2) + pow(positionZ - lookAtZ, 2));
+    pitch = asin((positionY - lookAtY) / radius);
+    yaw = atan2((positionZ - lookAtZ), (positionX - lookAtX));
+
     // init GLUT and the window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -87,6 +97,7 @@ int main(int argc, char **argv)
     // required callback registry
     glutDisplayFunc(renderScene);
     glutReshapeFunc(changeSize);
+    glutKeyboardFunc(processNormalKeys);
 
     // OpenGL settings
     glEnable(GL_DEPTH_TEST);
@@ -103,6 +114,10 @@ void renderScene()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
+
+    positionX = radius * cos(pitch) * sin(yaw);
+    positionY = radius * sin(pitch);
+    positionZ = radius * cos(pitch) * cos(yaw);
 
     gluLookAt(positionX, positionY, positionZ,
               lookAtX, lookAtY, lookAtZ,
@@ -139,6 +154,59 @@ void changeSize(int w, int h)
 
     // Get Back to the Modelview
     glMatrixMode(GL_MODELVIEW);
+}
+
+void processNormalKeys(unsigned char key, int xx, int yy)
+{
+    switch (key) {
+        case 27: // Quit - ESC Key
+            exit(0);
+        case 'w': // Slow pitch up
+            pitch += 0.01;
+            break;
+        case 'W': // Fast pitch up
+            pitch += 0.1;
+            break;
+        case 'a': // Slow yaw left
+            yaw -= 0.01;
+            break;
+        case 'A': // Fast yaw left
+            yaw -= 0.1;
+            break;
+        case 's': // Slow pitch down
+            pitch -= 0.01;
+            break;
+        case 'S': // Fast pitch down
+            pitch -= 0.1;
+            break;
+        case 'd': // Slow yaw right
+            yaw += 0.01;
+            break;
+        case 'D': // Fast yaw right
+            yaw += 0.1;
+            break;
+        case 'j': // Slow zoom out
+            radius += 0.01;
+            break;
+        case 'J': // Fast zoom out
+            radius += 0.1;
+            break;
+        case 'k': // Slow zoom in
+            radius -= 0.01;
+            break;
+        case 'K': // Fast zoom in
+            radius -= 0.1;
+            break;
+        default:
+            break;
+    }
+
+    if (pitch > M_PI_2)
+        pitch = M_PI_2;
+    else if (pitch < -M_PI_2)
+        pitch = -M_PI_2;
+
+    glutPostRedisplay();
 }
 
 void drawAxis()
