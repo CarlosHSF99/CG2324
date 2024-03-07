@@ -14,6 +14,8 @@ void changeSize(int w, int h);
 
 void processNormalKeys(unsigned char key, int xx, int yy);
 
+void drawAxis();
+
 float positionX, positionY, positionZ;
 float lookAtX, lookAtY, lookAtZ;
 float upX, upY, upZ;
@@ -121,6 +123,7 @@ void renderScene()
               lookAtX, lookAtY, lookAtZ,
               upX, upY, upZ);
 
+    drawAxis();
     for (const auto &model: models) {
         model.draw();
     }
@@ -204,4 +207,29 @@ void processNormalKeys(unsigned char key, int xx, int yy)
         pitch = -M_PI_2;
 
     glutPostRedisplay();
+}
+
+void drawAxis()
+{
+    // save current color
+    float currentColor[4];
+    glGetFloatv(GL_CURRENT_COLOR, currentColor);
+
+    glBegin(GL_LINES);
+    // X Axis in red
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(-100.0f, 0.0f, 0.0f);
+    glVertex3f(100.0f, 0.0f, 0.0f);
+    // Y Axis in Green
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, -100.0f, 0.0f);
+    glVertex3f(0.0f, 100.0f, 0.0f);
+    // Z Axis in Blue
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f, 0.0f, -100.0f);
+    glVertex3f(0.0f, 0.0f, 100.0f);
+    glEnd();
+
+    // restore previous color
+    glColor4fv(currentColor);
 }
