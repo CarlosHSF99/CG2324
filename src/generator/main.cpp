@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
-#include "utils/plane.h"
-#include "utils/box.h"
-#include "utils/sphere.h"
-#include "utils/cone.h"
+#include "generator/plane.h"
+#include "generator/box.h"
+#include "generator/sphere.h"
+#include "generator/cone.h"
 
 using std::cout, std::endl, std::string, std::ofstream, std::ifstream, std::tuple;
 
