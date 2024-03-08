@@ -1,5 +1,5 @@
 #include <cmath>
-#include "utils/cone.h"
+#include "generator/cone.h"
 
 Cone::Cone(float radius, float height, int slices, int stacks)
 {
@@ -25,14 +25,18 @@ Cone::Cone(float radius, float height, int slices, int stacks)
         vertices.emplace_back(x2, 0, z2);
     }
 
+    // last height and radius are reused for the tip
+    double y2;
+    double radius2;
+
     // curved surface
     // for each stack
-    for (int i = 0; i < stacks; i++) {
+    for (int i = 0; i < stacks - 1; i++) {
         double y1 = i * sliceStep; // current height
-        double y2 = (i + 1) * sliceStep; // next height
+        y2 = (i + 1) * sliceStep; // next height
 
         double radius1 = (float) (stacks - i) * radius / (float) stacks; // current radius
-        double radius2 = (float) (stacks - i - 1) * radius / (float) stacks; // next radius
+        radius2 = (float) (stacks - i - 1) * radius / (float) stacks; // next radius
 
         // for each slice
         for (int j = 0; j < slices; j++) {
@@ -55,15 +59,34 @@ Cone::Cone(float radius, float height, int slices, int stacks)
             double x4 = radius2 * sin(alpha2);
             double z4 = radius2 * cos(alpha2);
 
-            // first triangle
+            // first (bottom left) triangle
             vertices.emplace_back(x1, y1, z1);
             vertices.emplace_back(x2, y1, z2);
             vertices.emplace_back(x3, y2, z3);
 
-            // second triangle
+            // second (top right) triangle
             vertices.emplace_back(x3, y2, z3);
             vertices.emplace_back(x2, y1, z2);
             vertices.emplace_back(x4, y2, z4);
         }
+    }
+
+    // tip
+    for (int i = 0; i < slices; i++) {
+        double alpha1 = i * stackStep;
+        double alpha2 = (i + 1) * stackStep;
+
+        // bottom left vertex
+        double x1 = radius2 * sin(alpha1);
+        double z1 = radius2 * cos(alpha1);
+
+        // bottom right vertex
+        double x2 = radius2 * sin(alpha2);
+        double z2 = radius2 * cos(alpha2);
+
+        // triangle
+        vertices.emplace_back(x1, y2, z1);
+        vertices.emplace_back(x2, y2, z2);
+        vertices.emplace_back(0, height, 0);
     }
 }

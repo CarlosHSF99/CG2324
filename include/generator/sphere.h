@@ -2,7 +2,7 @@
 #define CG2324_SPHERE_H
 
 
-#include "model.h"
+#include "utils/model.h"
 
 class Sphere : public Model
 {

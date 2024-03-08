@@ -2,7 +2,7 @@
 #define CG2324_PLANE_H
 
 
-#include "model.h"
+#include "utils/model.h"
 
 class Plane : public Model
 {

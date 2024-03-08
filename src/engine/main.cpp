@@ -26,6 +26,11 @@ std::vector<Model> models;
 
 int main(int argc, char **argv)
 {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <xml_file>" << std::endl;
+        return 1;
+    }
+
     int width, height;
 
     XMLDocument doc;
@@ -85,14 +90,14 @@ int main(int argc, char **argv)
 
     radius = (float) sqrt(pow(positionX - lookAtX, 2) + pow(positionY - lookAtY, 2) + pow(positionZ - lookAtZ, 2));
     pitch = asin((positionY - lookAtY) / radius);
-    yaw = atan2((positionZ - lookAtZ), (positionX - lookAtX));
+    yaw = atan2((positionX - lookAtX), (positionZ - lookAtZ));
 
     // init GLUT and the window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - width) / 2, (glutGet(GLUT_SCREEN_HEIGHT) - height) / 2);
     glutInitWindowSize(width, height);
-    glutCreateWindow("CG@DI-UM");
+    glutCreateWindow(argv[1]);
 
     // required callback registry
     glutDisplayFunc(renderScene);

@@ -2,7 +2,13 @@ cmake_minimum_required(VERSION 3.27)
 
 project(generator)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME}
+        main.cpp
+        plane.cpp
+        box.cpp
+        sphere.cpp
+        cone.cpp
+)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
