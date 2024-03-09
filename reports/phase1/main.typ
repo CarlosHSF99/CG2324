@@ -82,6 +82,40 @@ Estratégia de cálculo dos vértices:
 
 - A cada iteração calculámos as coordenadas dos vértices dos dois triângulos que compõe a divisão e adicionámos estes à lista de vértices do plano pela ordem ditada pela regra da mão direita de forma a que os triângulos estejam direcionados para cima.
 
+A @plane esquematiza a estratégia de cálculo dos vértices descrita, utilizando como variáveis as variáveis da própria implementação que se segue:
+
+```cpp
+Plane::Plane(float size, int divisions)
+{
+    float originOffset = size / 2;
+    float divisionSize = size / (float) divisions;
+
+    for (int i = 0; i < divisions; i++) {
+        for (int j = 0; j < divisions; j++) {
+            // back left corner of the current square
+            float x1 = (float) i * divisionSize - originOffset;
+            float z1 = (float) j * divisionSize - originOffset;
+
+            // front right corner of the current square
+            float x2 = x1 + divisionSize;
+            float z2 = z1 + divisionSize;
+
+            // first (back right) triangle
+            vertices.emplace_back(x1, 0, z1);
+            vertices.emplace_back(x2, 0, z2);
+            vertices.emplace_back(x2, 0, z1);
+
+            // second (front left) triangle
+            vertices.emplace_back(x1, 0, z1);
+            vertices.emplace_back(x1, 0, z2);
+            vertices.emplace_back(x2, 0, z2);
+        }
+    }
+}
+```
+
+#figure(image("images/plane_report.png", width: 50%), caption: "Plano com 1 divisão e 2 de comprimento com coordenadas no plano xOz (y=0).") <plane>
+
 === Caixa
 
 A caixa é definida pelo comprimento do seu lado e o número de divisões. Cada divisão é composta por dois triângulos isósceles rectângulos.
@@ -89,6 +123,35 @@ A caixa é definida pelo comprimento do seu lado e o número de divisões. Cada 
 Estratégia de cálculo dos vértices:
 
 - A caixa é definida como a concatenação de 6 planos rodados e transladados para o efeito.
+
+Esta estratégia leva a uma implementação bastante declarativa:
+
+```cpp
+vector<Model> createBox(float size, int divisions)
+{
+    float halfSize = size / 2;
+
+    Plane top(size, divisions);
+    top.translate({0, halfSize, 0});
+    Plane bottom(size, divisions);
+    bottom.rotate({0, 0, 1}, M_PI);
+    bottom.translate({0, -halfSize, 0});
+    Plane left(size, divisions);
+    left.rotate({0, 0, 1}, M_PI_2);
+    left.translate({-halfSize, 0, 0});
+    Plane right(size, divisions);
+    right.rotate({0, 0, 1}, -M_PI_2);
+    right.translate({halfSize, 0, 0});
+    Plane front(size, divisions);
+    front.rotate({1, 0, 0}, M_PI_2);
+    front.translate({0, 0, halfSize});
+    Plane back(size, divisions);
+    back.rotate({1, 0, 0}, -M_PI_2);
+    back.translate({0, 0, -halfSize});
+
+    return vector<Model>{top, bottom, left, right, front, back};
+}
+```
 
 === Esfera
 
@@ -108,6 +171,55 @@ $ x = r dot cos(beta) dot sin(alpha) \
   y = r dot sin(beta) \
   z = r dot cos(beta) dot cos(alpha) $
 
+A @sphere esquematiza a estratégia de cálculo dos vértices descrita, utilizando como variáveis as variáveis da própria implementação simplificada que se segue. Esta generaliza a primeira e última _stack_ como qualquer outra _stack_ das esfera:
+
+```cpp
+Sphere::Sphere(double radius, int slices, int stacks)
+{
+    double stackStep = 2 * M_PI / slices; // angle between each slice
+    double sliceStep = M_PI / stacks; // angle between each stack
+
+    // for each stack
+    for (int i = 0; i < stacks; i++) {
+        double beta1 = i * sliceStep - M_PI_2; // angle of current stack
+        double beta2 = (i + 1) * sliceStep - M_PI_2; // angle of next stack
+
+        double y1 = radius * sin(beta1); // height of current stack
+        double y2 = radius * sin(beta2); // height of next stack
+
+        // for each slice
+        for (int j = 0; j < slices; j++) {
+            double alpha1 = j * stackStep; // angle of current slice
+            double alpha2 = (j + 1) * stackStep; // angle of next slice
+
+            double x1 = radius * cos(beta1) * sin(alpha1);
+            double z1 = radius * cos(beta1) * cos(alpha1);
+
+            double x2 = radius * cos(beta1) * sin(alpha2);
+            double z2 = radius * cos(beta1) * cos(alpha2);
+
+            double x3 = radius * cos(beta2) * sin(alpha1);
+            double z3 = radius * cos(beta2) * cos(alpha1);
+
+            double x4 = radius * cos(beta2) * sin(alpha2);
+            double z4 = radius * cos(beta2) * cos(alpha2);
+
+            // bottom left triangle
+            vertices.emplace_back(x1, y1, z1);
+            vertices.emplace_back(x2, y1, z2);
+            vertices.emplace_back(x3, y2, z3);
+
+            // bottom right triangle
+            vertices.emplace_back(x3, y2, z3);
+            vertices.emplace_back(x2, y1, z2);
+            vertices.emplace_back(x4, y2, z4);
+        }
+    }
+}
+```
+
+#figure(image("images/sphere_report.png", width: 50%), caption: "Secção de esfera com 1 de raio e 12 stacks e slices") <sphere>
+
 === Cone
 
 O cone é definido pelo raio da base, a sua altura e o número de _slices_ e _stacks_ do próprio cone.
@@ -115,6 +227,73 @@ O cone é definido pelo raio da base, a sua altura e o número de _slices_ e _st
 Estratégia de cálculo dos vértices:
 
 - Similarmente à esfera, os vértices são calculados _stack_ a _stack_ e a ponta (última _stack_) é calculada separadamente de forma a evitar incluir triângulos duplicados.
+
+Segue a implementação simplificada do cone generalizando a ponta (última _stack_) como qualquer outra _stack_:
+
+```cpp
+Cone::Cone(float radius, float height, int slices, int stacks)
+{
+    double stackStep = 2 * M_PI / slices; // angle between each slice
+    double sliceStep = height / (float) stacks; // height between each stack
+
+    // circular base
+    for (int i = 0; i < slices; i++) {
+        double alpha1 = i * stackStep; // current angle
+        double alpha2 = (i + 1) * stackStep; // next angle
+
+        // bottom left vertex
+        double x1 = radius * sin(alpha2);
+        double z1 = radius * cos(alpha2);
+
+        // bottom right vertex
+        double x2 = radius * sin(alpha1);
+        double z2 = radius * cos(alpha1);
+
+        // triangle
+        vertices.emplace_back(0, 0, 0);
+        vertices.emplace_back(x1, 0, z1);
+        vertices.emplace_back(x2, 0, z2);
+    }
+
+    // curved surface
+    // for each stack
+    for (int i = 0; i < stacks - 1; i++) {
+        double y1 = i * sliceStep; // current height
+        double y2 = (i + 1) * sliceStep; // next height
+
+        double radius1 = (stacks - i) * radius / stacks; // current radius
+        double radius2 = (stacks - i - 1) * radius / stacks; // next radius
+
+        // for each slice
+        for (int j = 0; j < slices; j++) {
+            double alpha1 = j * stackStep;
+            double alpha2 = (j + 1) * stackStep;
+
+            double x1 = radius1 * sin(alpha1);
+            double z1 = radius1 * cos(alpha1);
+
+            double x2 = radius1 * sin(alpha2);
+            double z2 = radius1 * cos(alpha2);
+
+            double x3 = radius2 * sin(alpha1);
+            double z3 = radius2 * cos(alpha1);
+
+            double x4 = radius2 * sin(alpha2);
+            double z4 = radius2 * cos(alpha2);
+
+            // bottom left triangle
+            vertices.emplace_back(x1, y1, z1);
+            vertices.emplace_back(x2, y1, z2);
+            vertices.emplace_back(x3, y2, z3);
+
+            // top right triangle
+            vertices.emplace_back(x3, y2, z3);
+            vertices.emplace_back(x2, y1, z2);
+            vertices.emplace_back(x4, y2, z4);
+        }
+    }
+}
+```
 
 == Sintaxe ficheiros .3d
 
