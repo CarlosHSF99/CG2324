@@ -1,0 +1,4 @@
+#ifndef CG2324_PARSER_H
+#define CG2324_PARSER_H
+
+#endif //CG2324_PARSER_H

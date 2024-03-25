@@ -1,8 +1,10 @@
 #include <iostream>
 #include <GL/glut.h>
 #include <cmath>
+#include <memory>
 #include "utils/model.h"
 #include "deps/tinyxml2.h"
+#include "engine/group.h"
 
 using namespace tinyxml2;
 
@@ -22,7 +24,62 @@ float upX, upY, upZ;
 float fov, near, far;
 float pitch, yaw;
 float radius;
-std::vector<Model> models;
+
+std::vector<Group> groups;
+
+Group parseGroup(XMLElement *groupElement)
+{
+    std::vector<std::unique_ptr<Transform>> transforms;
+    std::vector<Model> models;
+    std::vector<Group> subgroups;
+
+    XMLElement *transformsElement = groupElement->FirstChildElement("transform");
+    if (transformsElement) {
+        XMLElement *translateElement = transformsElement->FirstChildElement("translate");
+        if (translateElement) {
+            float x, y, z;
+            translateElement->QueryFloatAttribute("x", &x);
+            translateElement->QueryFloatAttribute("y", &y);
+            translateElement->QueryFloatAttribute("z", &z);
+            transforms.push_back(std::make_unique<Translate>(x, y, z));
+        }
+        XMLElement *rotateElement = transformsElement->FirstChildElement("rotate");
+        if (rotateElement) {
+            float angle, x, y, z;
+            rotateElement->QueryFloatAttribute("angle", &angle);
+            rotateElement->QueryFloatAttribute("x", &x);
+            rotateElement->QueryFloatAttribute("y", &y);
+            rotateElement->QueryFloatAttribute("z", &z);
+            transforms.push_back(std::make_unique<Rotate>(angle, x, y, z));
+        }
+        XMLElement *scaleElement = transformsElement->FirstChildElement("scale");
+        if (scaleElement) {
+            float x, y, z;
+            scaleElement->QueryFloatAttribute("x", &x);
+            scaleElement->QueryFloatAttribute("y", &y);
+            scaleElement->QueryFloatAttribute("z", &z);
+            transforms.push_back(std::make_unique<Scale>(x, y, z));
+        }
+    }
+
+    XMLElement *modelsElement = groupElement->FirstChildElement("models");
+    if (modelsElement) {
+        XMLElement *modelElement = modelsElement->FirstChildElement("model");
+        while (modelElement) {
+            const char *file = modelElement->Attribute("file");
+            models.emplace_back(file);
+            modelElement = modelElement->NextSiblingElement("model");
+        }
+    }
+
+    XMLElement *subgroupElement = groupElement->FirstChildElement("group");
+    while (subgroupElement) {
+        subgroups.push_back(parseGroup(subgroupElement));
+        subgroupElement = subgroupElement->NextSiblingElement("group");
+    }
+
+    return {std::move(transforms), std::move(models), std::move(subgroups)};
+}
 
 int main(int argc, char **argv)
 {
@@ -72,16 +129,10 @@ int main(int argc, char **argv)
             }
 
             XMLElement *groupElement = worldElement->FirstChildElement("group");
-            if (groupElement) {
-                XMLElement *modelsElement = groupElement->FirstChildElement("models");
-                if (modelsElement) {
-                    XMLElement *modelElement = modelsElement->FirstChildElement("model");
-                    while (modelElement) {
-                        const char *file = modelElement->Attribute("file");
-                        models.emplace_back(file);
-                        modelElement = modelElement->NextSiblingElement("model");
-                    }
-                }
+
+            while (groupElement) {
+                groups.push_back(parseGroup(groupElement));
+                groupElement = groupElement->NextSiblingElement("group");
             }
         }
     } else {
@@ -129,8 +180,9 @@ void renderScene()
               upX, upY, upZ);
 
     drawAxis();
-    for (const auto &model: models) {
-        model.draw();
+
+    for (const auto &group: groups) {
+        group.draw();
     }
 
     glutSwapBuffers();
