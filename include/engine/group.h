@@ -2,11 +2,10 @@
 #define CG2324_GROUP_H
 
 
-#include <utility>
 #include <vector>
 #include <memory>
 #include "utils/model.h"
-#include "transform.h"
+#include "engine/transform.h"
 
 class Group
 {
@@ -22,6 +21,7 @@ public:
 
     Group(std::vector<std::unique_ptr<Transform>> transforms, std::vector<Model> models, std::vector<Group> subgroups)
             : transforms(std::move(transforms)), models(std::move(models)), subgroups(std::move(subgroups)) {}
+
 };
 
 

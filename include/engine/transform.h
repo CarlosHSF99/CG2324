@@ -15,7 +15,7 @@ public:
 class Translate : public Transform
 {
 private:
-    const Vector3 vector;
+    Vector3 vector;
 
 public:
     explicit Translate(Vector3 vector) : vector(vector) {}
@@ -28,8 +28,8 @@ public:
 class Rotate : public Transform
 {
 private:
-    const float angle;
-    const Vector3 vector;
+    float angle;
+    Vector3 vector;
 
 public:
     Rotate(float angle, Vector3 vector) : angle(angle), vector(vector) {}
@@ -42,7 +42,7 @@ public:
 class Scale : public Transform
 {
 private:
-    const float factorX, factorY, factorZ;
+    float factorX, factorY, factorZ;
 
 public:
     Scale(float x, float y, float z) : factorX(x), factorY(y), factorZ(z) {}

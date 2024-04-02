@@ -22,3 +22,12 @@ ostream &operator<<(ostream &os, const Point3 &point)
     os << '(' << point.x << ", " << point.y << ", " << point.z << ')';
     return os;
 }
+
+Point3 &Point3::operator=(Point3 const &other) noexcept
+{
+    if (this != &other) {
+        std::destroy_at(this);
+        std::construct_at(this, other);
+    }
+    return *this;
+}

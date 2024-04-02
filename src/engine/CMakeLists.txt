@@ -6,8 +6,10 @@ add_executable(${PROJECT_NAME}
         main.cpp
         group.cpp
         transform.cpp
-        world_loader.cpp
+        xml_world_loader.cpp
         world.cpp
+        camera.cpp
+        window.cpp
 )
 
 find_package(OpenGL REQUIRED)

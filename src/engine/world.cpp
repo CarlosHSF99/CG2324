@@ -1,5 +1,6 @@
-//
-// Created by carlos on 25-03-2024.
-//
+#include "engine/world.h"
 
-#include "World.h"
+void World::draw() const
+{
+    group.draw();
+}
