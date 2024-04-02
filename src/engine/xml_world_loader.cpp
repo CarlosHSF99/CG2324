@@ -88,30 +88,31 @@ namespace XMLWorldLoader
 
         XMLElement *transformsElement = groupElement->FirstChildElement("transform");
         if (transformsElement) {
-            XMLElement *translateElement = transformsElement->FirstChildElement("translate");
-            if (translateElement) {
-                float x, y, z;
-                translateElement->QueryFloatAttribute("x", &x);
-                translateElement->QueryFloatAttribute("y", &y);
-                translateElement->QueryFloatAttribute("z", &z);
-                transforms.push_back(std::make_unique<Translate>(x, y, z));
-            }
-            XMLElement *rotateElement = transformsElement->FirstChildElement("rotate");
-            if (rotateElement) {
-                float angle, x, y, z;
-                rotateElement->QueryFloatAttribute("angle", &angle);
-                rotateElement->QueryFloatAttribute("x", &x);
-                rotateElement->QueryFloatAttribute("y", &y);
-                rotateElement->QueryFloatAttribute("z", &z);
-                transforms.push_back(std::make_unique<Rotate>(angle, x, y, z));
-            }
-            XMLElement *scaleElement = transformsElement->FirstChildElement("scale");
-            if (scaleElement) {
-                float x, y, z;
-                scaleElement->QueryFloatAttribute("x", &x);
-                scaleElement->QueryFloatAttribute("y", &y);
-                scaleElement->QueryFloatAttribute("z", &z);
-                transforms.push_back(std::make_unique<Scale>(x, y, z));
+            XMLElement *transformElement = transformsElement->FirstChildElement();
+            while (transformElement) {
+                if (transformElement->Name() == std::string("translate")) {
+                    float x, y, z;
+                    transformElement->QueryFloatAttribute("x", &x);
+                    transformElement->QueryFloatAttribute("y", &y);
+                    transformElement->QueryFloatAttribute("z", &z);
+                    transforms.push_back(std::make_unique<Translate>(x, y, z));
+                }
+                else if (transformElement->Name() == std::string("rotate")) {
+                    float angle, x, y, z;
+                    transformElement->QueryFloatAttribute("angle", &angle);
+                    transformElement->QueryFloatAttribute("x", &x);
+                    transformElement->QueryFloatAttribute("y", &y);
+                    transformElement->QueryFloatAttribute("z", &z);
+                    transforms.push_back(std::make_unique<Rotate>(angle, x, y, z));
+                }
+                else if (transformElement->Name() == std::string("scale")) {
+                    float x, y, z;
+                    transformElement->QueryFloatAttribute("x", &x);
+                    transformElement->QueryFloatAttribute("y", &y);
+                    transformElement->QueryFloatAttribute("z", &z);
+                    transforms.push_back(std::make_unique<Scale>(x, y, z));
+                }
+                transformElement = transformElement->NextSiblingElement();
             }
         }
 

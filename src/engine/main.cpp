@@ -28,7 +28,8 @@ int main(int argc, char **argv)
     // init GLUT and the window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-    glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - world.window.width) / 2, (glutGet(GLUT_SCREEN_HEIGHT) - world.window.height) / 2);
+    glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - world.window.width) / 2,
+                           (glutGet(GLUT_SCREEN_HEIGHT) - world.window.height) / 2);
     glutInitWindowSize(world.window.width, world.window.height);
     glutCreateWindow(world.window.title);
 
