@@ -122,6 +122,16 @@
             <models>
                 <model file="sphere_1_32_32.3d"/>
             </models>
+            <!--RING-->
+            <group>
+                <transform>
+                    <rotate angle="25" x="-1" y="0" z="-1"/>
+                    <scale x="2.5" y="0.01" z="2.5"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_32_32.3d"/>
+                </models>
+            </group>
         </group>
         <!--URANUS-->
         <group>
