@@ -78,6 +78,39 @@
             <models>
                 <model file="sphere_1_32_32.3d"/>
             </models>
+            <!--GANYMEDE-->
+            <group>
+                <transform>
+                    <rotate angle="351" x="0" y="1" z="0"/>
+                    <translate x="2" y="0" z="0"/>
+                    <scale x="0.15" y="0.15" z="0.15"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_32_32.3d"/>
+                </models>
+            </group>
+            <!--TITAN-->
+            <group>
+                <transform>
+                    <rotate angle="144" x="0" y="1" z="0"/>
+                    <translate x="2.5" y="0" z="0"/>
+                    <scale x="0.125" y="0.125" z="0.125"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_32_32.3d"/>
+                </models>
+            </group>
+            <!--CALLISTO-->
+            <group>
+                <transform>
+                    <rotate angle="52" x="0" y="1" z="0"/>
+                    <translate x="2" y="0" z="0"/>
+                    <scale x="0.1" y="0.1" z="0.1"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_32_32.3d"/>
+                </models>
+            </group>
         </group>
         <!--SATURN-->
         <group>
