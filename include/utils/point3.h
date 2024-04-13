@@ -7,7 +7,7 @@
 
 struct Point3
 {
-    const float x, y, z;
+    float x, y, z;
 
     Point3() : x(0), y(0), z(0) {}
 
@@ -18,6 +18,8 @@ struct Point3
     Point3 operator+(const std::tuple<float, float, float> &vector) const;
 
     friend std::ostream &operator<<(std::ostream &os, const Point3 &point);
+
+    Point3 &operator=(const Point3 &other) noexcept;
 };
 
 

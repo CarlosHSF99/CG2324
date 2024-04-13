@@ -2,7 +2,15 @@ cmake_minimum_required(VERSION 3.27)
 
 project(engine)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME}
+        main.cpp
+        group.cpp
+        transform.cpp
+        xml_world_loader.cpp
+        world.cpp
+        camera.cpp
+        window.cpp
+)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})

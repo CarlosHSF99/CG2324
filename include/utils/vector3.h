@@ -1,11 +1,12 @@
 #ifndef CG2324_VECTOR3_H
 #define CG2324_VECTOR3_H
 
+#include <tuple>
 
 class Vector3
 {
 public:
-    const float x, y, z;
+    float x, y, z;
 
 public:
     Vector3() : x(0), y(0), z(0) {}

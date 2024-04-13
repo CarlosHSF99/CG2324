@@ -1,0 +1,159 @@
+<world> <!-- a world can have a camera, a window definition, and a single group -->
+    <window width="1920" height="1080"/>
+    <camera>
+        <position x="15" y="15" z="15"/>
+        <lookAt x="0" y="0" z="0"/>
+        <up x="0" y="1" z="0"/> <!-- optional, use these values as default-->
+        <projection fov="60" near="1" far="1000"/> <!-- optional, use these values as default-->
+    </camera>
+
+    <group>
+        <!--SUN-->
+        <group>
+            <models>
+                <model file="sphere_1_32_32.3d"/>
+            </models>
+            <!--MERCURY-->
+            <group>
+                <transform>
+                    <translate x="3" y="0" z="0"/>
+                    <scale x="0.1" y="0.1" z="0.1"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_32_32.3d"/>
+                </models>
+            </group>
+            <!--VENUS-->
+            <group>
+                <transform>
+                    <rotate angle="355" x="0" y="1" z="0"/>
+                    <translate x="5" y="0" z="0"/>
+                    <scale x="0.2" y="0.2" z="0.2"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_32_32.3d"/>
+                </models>
+            </group>
+            <!--EARTH-->
+            <group>
+                <transform>
+                    <rotate angle="18" x="0" y="1" z="0"/>
+                    <translate x="8" y="0" z="0"/>
+                    <scale x="0.3" y="0.3" z="0.3"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_32_32.3d"/>
+                </models>
+                <!--MOON-->
+                <group>
+                    <transform>
+                        <rotate angle="130" x="0" y="1" z="0"/>
+                        <translate x="3" y="0" z="0"/>
+                        <scale x="0.25" y="0.25" z="0.25"/>
+                    </transform>
+                    <models>
+                        <model file="sphere_1_32_32.3d"/>
+                    </models>
+                </group>
+            </group>
+            <!--MARS-->
+            <group>
+                <transform>
+                    <rotate angle="211" x="0" y="1" z="0"/>
+                    <translate x="10" y="0" z="0"/>
+                    <scale x="0.2" y="0.2" z="0.2"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_32_32.3d"/>
+                </models>
+            </group>
+            <!--JUPITER-->
+            <group>
+                <transform>
+                    <rotate angle="5" x="0" y="1" z="0"/>
+                    <translate x="15" y="0" z="0"/>
+                    <scale x="0.55" y="0.55" z="0.55"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_32_32.3d"/>
+                </models>
+                <!--GANYMEDE-->
+                <group>
+                    <transform>
+                        <rotate angle="351" x="0" y="1" z="0"/>
+                        <translate x="2" y="0" z="0"/>
+                        <scale x="0.15" y="0.15" z="0.15"/>
+                    </transform>
+                    <models>
+                        <model file="sphere_1_32_32.3d"/>
+                    </models>
+                </group>
+                <!--TITAN-->
+                <group>
+                    <transform>
+                        <rotate angle="144" x="0" y="1" z="0"/>
+                        <translate x="2.5" y="0" z="0"/>
+                        <scale x="0.125" y="0.125" z="0.125"/>
+                    </transform>
+                    <models>
+                        <model file="sphere_1_32_32.3d"/>
+                    </models>
+                </group>
+                <!--CALLISTO-->
+                <group>
+                    <transform>
+                        <rotate angle="52" x="0" y="1" z="0"/>
+                        <translate x="2" y="0" z="0"/>
+                        <scale x="0.1" y="0.1" z="0.1"/>
+                    </transform>
+                    <models>
+                        <model file="sphere_1_32_32.3d"/>
+                    </models>
+                </group>
+            </group>
+            <!--SATURN-->
+            <group>
+                <transform>
+                    <rotate angle="168" x="0" y="1" z="0"/>
+                    <translate x="17" y="0" z="0"/>
+                    <scale x="0.4" y="0.4" z="0.4"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_32_32.3d"/>
+                </models>
+                <!--RING-->
+                <group>
+                    <transform>
+                        <rotate angle="25" x="-1" y="0" z="-1"/>
+                        <scale x="2.5" y="0.01" z="2.5"/>
+                    </transform>
+                    <models>
+                        <model file="sphere_1_32_32.3d"/>
+                    </models>
+                </group>
+            </group>
+            <!--URANUS-->
+            <group>
+                <transform>
+                    <rotate angle="47" x="0" y="1" z="0"/>
+                    <translate x="19" y="0" z="0"/>
+                    <scale x="0.1" y="0.1" z="0.1"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_32_32.3d"/>
+                </models>
+            </group>
+            <!--NEPTUNE-->
+            <group>
+                <transform>
+                    <rotate angle="213" x="0" y="1" z="0"/>
+                    <translate x="21" y="0" z="0"/>
+                    <scale x="0.1" y="0.1" z="0.1"/>
+                </transform>
+                <models>
+                    <model file="sphere_1_32_32.3d"/>
+                </models>
+            </group>
+        </group>
+    </group>
+</world>
