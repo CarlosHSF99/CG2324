@@ -1,6 +1,6 @@
 #include <cmath>
 #include <fstream>
-#include <GL/glut.h>
+#include <GL/glew.h>
 #include <iostream>
 #include <iterator>
 #include "utils/vector3.h"
@@ -39,12 +39,18 @@ Model::Model(const vector<Model> &models)
     }
 }
 
+void Model::initBuffer()
+{
+    glGenBuffers(1, &buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) (3 * vertices.size() * sizeof(float)), vertices.data(), GL_STATIC_DRAW);
+}
+
 void Model::draw() const
 {
-    glBegin(GL_TRIANGLES);
-    for (const auto &[x, y, z]: vertices)
-        glVertex3f(x, y, z);
-    glEnd();
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glVertexPointer(3, GL_FLOAT, 0, nullptr);
+    glDrawArrays(GL_TRIANGLES, 0, (GLsizei) vertices.size());
 }
 
 void Model::translate(const Vector3 &v)
