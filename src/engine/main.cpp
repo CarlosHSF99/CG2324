@@ -1,4 +1,5 @@
 #include <iostream>
+#include <GL/glew.h>
 #include <GL/glut.h>
 #include <cmath>
 #include "engine/world.h"
@@ -38,11 +39,18 @@ int main(int argc, char **argv)
     glutReshapeFunc(changeSize);
     glutKeyboardFunc(processNormalKeys);
 
+    // init GLEW
+#ifndef __APPLE__
+    glewInit();
+#endif
+
     // OpenGL settings
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glEnableClientState(GL_VERTEX_ARRAY);
+
+    world.group.initBuffers();
 
     glutMainLoop();
 
@@ -86,7 +94,7 @@ void changeSize(int w, int h)
     // Set the correct perspective.
     world.camera.setPerspective(w, h);
 
-    // Get Back to the Modelview
+    // Get Back to the ModelView
     glMatrixMode(GL_MODELVIEW);
 }
 
