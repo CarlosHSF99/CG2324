@@ -8,6 +8,7 @@ add_executable(${PROJECT_NAME}
         box.cpp
         sphere.cpp
         cone.cpp
+        patch_model.cpp
 )
 
 find_package(OpenGL REQUIRED)
