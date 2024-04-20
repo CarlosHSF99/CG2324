@@ -1,9 +1,11 @@
 #include <iostream>
 #include <fstream>
+
 #include "generator/plane.h"
 #include "generator/box.h"
 #include "generator/sphere.h"
 #include "generator/cone.h"
+#include "generator/patch_model.h"
 
 using std::cout, std::endl, std::string, std::ofstream, std::ifstream, std::tuple;
 
@@ -34,6 +36,11 @@ int main(int argc, char **argv)
         auto stacks = std::stoi(argv[5]);
         Cone cone(radius, height, slices, stacks);
         cone.writeToFile(argv[6]);
+    } else if (type == "patch") {
+        auto filename = std::string(argv[2]);
+        auto tessellationLevel = std::stoi(argv[3]);
+        PatchModel patchModel(filename, tessellationLevel);
+        patchModel.writeToFile(argv[4]);
     } else {
         cout << "Invalid type" << endl;
     }

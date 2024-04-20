@@ -3,6 +3,8 @@
 
 #include <tuple>
 
+struct Point3;
+
 class Vector3
 {
 public:
@@ -13,7 +15,13 @@ public:
 
     Vector3(float x, float y, float z);
 
+    explicit Vector3(const Point3 &p);
+
+    Vector3(const Point3 &p1, const Point3 &p2);
+
     Vector3 operator+(const Vector3 &vector) const;
+
+    Vector3 operator+=(const Vector3 &vector);
 
     Vector3 operator+(const std::tuple<float, float, float> &vector) const;
 
