@@ -26,6 +26,14 @@ public:
     Vector3 operator+(const std::tuple<float, float, float> &vector) const;
 
     Vector3 operator*(float scalar) const;
+
+    Vector3 normalize();
+
+    Vector3 cross(Vector3 vector3);
+
+    static Vector3 normalize(Vector3 v);
+
+    static Vector3 cross(Vector3 v1, Vector3 v2);
 };
 
 

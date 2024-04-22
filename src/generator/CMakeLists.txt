@@ -21,4 +21,14 @@ include_directories(${GLUT_INCLUDE_DIRS})
 link_directories(${GLUT_LIBRARY_DIRS})
 add_definitions(${GLUT_DEFINITIONS})
 
-target_link_libraries(${PROJECT_NAME} utils ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+find_package(GLEW REQUIRED)
+include_directories(${GLEW_INCLUDE_DIRS})
+link_libraries(${GLEW_LIBRARIES})
+
+target_link_libraries(
+        ${PROJECT_NAME}
+        utils
+        ${OPENGL_LIBRARIES}
+        ${GLUT_LIBRARIES}
+        ${GLEW_LIBRARIES}
+)

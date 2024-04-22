@@ -37,6 +37,7 @@ int main(int argc, char **argv)
     // required callback registry
     glutDisplayFunc(renderScene);
     glutReshapeFunc(changeSize);
+    glutIdleFunc(renderScene);
     glutKeyboardFunc(processNormalKeys);
 
     // init GLEW
@@ -65,8 +66,7 @@ void renderScene()
 
     drawAxis();
 
-    // world.draw();
-    world.group.draw();
+    world.draw();
 
     glutSwapBuffers();
 }
