@@ -20,6 +20,16 @@ TimedTranslate::TimedTranslate(float time, bool align, bool draw, std::vector<Po
     }
 }
 
+TimedRotate::TimedRotate(float time, Vector3 vector) : vector(vector)
+{
+    anglePerSecond = (bool) time ? 360.0f / time : 0;
+}
+
+TimedRotate::TimedRotate(float time, float x, float y, float z) : vector(x, y, z)
+{
+    anglePerSecond = (bool) time ? 360.0f / time : 0;
+}
+
 void Translate::apply(float) noexcept
 {
     glTranslatef(this->vector.x, this->vector.y, this->vector.z);
@@ -55,7 +65,7 @@ void TimedTranslate::apply(float gt) noexcept
 
 void TimedRotate::apply(float gt) noexcept
 {
-    glRotatef(gt * ((bool) time ? 360.0f / time : 0), vector.x, vector.y, vector.z);
+    glRotatef(gt * anglePerSecond, vector.x, vector.y, vector.z);
 }
 
 std::pair<Point3, Vector3> TimedTranslate::getGlobalCatmullRomPoint(float gt) const

@@ -66,13 +66,13 @@ public:
 class TimedRotate : public Transform
 {
 private:
-    float time;
+    float anglePerSecond;
     Vector3 vector;
 
 public:
-    TimedRotate(float time, Vector3 vector) : time(time), vector(vector) {}
+    TimedRotate(float time, Vector3 vector);
 
-    TimedRotate(float time, float x, float y, float z) : time(time), vector(x, y, z) {}
+    TimedRotate(float time, float x, float y, float z);
 
     void apply(float gt) noexcept override;
 };
