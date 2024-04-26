@@ -7,8 +7,8 @@ std::pair<Point3, Vector3> getCatmullRomPoint(float t, Point3 p0, Point3 p1, Poi
 
 std::array<float, 16> buildRotationMatrix(Vector3 x, Vector3 y, Vector3 z);
 
-TimedTranslate::TimedTranslate(float time, bool align, std::vector<Point3> points)
-        : time(time), align(align), points(std::move(points))
+TimedTranslate::TimedTranslate(float time, bool align, bool draw, std::vector<Point3> points)
+        : time(time), align(align), draw(draw), points(std::move(points))
 {
     float gt = 0.0f;
     const unsigned long nSteps = this->points.size() * 100;
@@ -37,8 +37,9 @@ void Scale::apply(float) noexcept
 
 void TimedTranslate::apply(float gt) noexcept
 {
-    //if (draw?) drawCurve();
-    drawCurve();
+    if (draw) {
+        drawCurve();
+    }
 
     auto [pos, dir] = getGlobalCatmullRomPoint(gt);
     glTranslatef(pos.x, pos.y, pos.z);

@@ -32,8 +32,8 @@ PatchModel::PatchModel(int tessellationLevel, const vector<array<int, 16>> &indi
         // generate vectors for current patch
         vector<array<float, 4>> vectors;
         for (int i = 0; i <= tessellationLevel; i++) {
-            float u = (float) i / (float) tessellationLevel;
-            vectors.push_back(multMatrixVector(M, {powf(u, 3), powf(u, 2), u, 1}));
+            float t = (float) i / (float) tessellationLevel;
+            vectors.push_back(multMatrixVector(M, {powf(t, 3), powf(t, 2), t, 1}));
         }
 
         // generate vertices for current patch
@@ -124,6 +124,5 @@ Point3 generatePoint(vector<Point3> patchControlPoints, array<float, 4> um, arra
         }
         pointUV = pointUV + ump * vm[i];
     }
-
     return pointUV;
 }

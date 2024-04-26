@@ -86,10 +86,11 @@ namespace XMLWorldLoader
                 if (transformElement->Name() == std::string("translate")) {
                     if (transformElement->Attribute("time")) {
                         float time;
-                        bool align;
+                        bool align, draw;
                         std::vector<Point3> points;
                         transformElement->QueryFloatAttribute("time", &time);
                         transformElement->QueryBoolAttribute("align", &align);
+                        transformElement->QueryBoolAttribute("draw", &draw);
                         XMLElement *pointElement = transformElement->FirstChildElement("point");
                         while (pointElement) {
                             float x, y, z;
@@ -99,7 +100,7 @@ namespace XMLWorldLoader
                             points.emplace_back(x, y, z);
                             pointElement = pointElement->NextSiblingElement("point");
                         }
-                        transforms.push_back(std::make_unique<TimedTranslate>(time, align, std::move(points)));
+                        transforms.push_back(std::make_unique<TimedTranslate>(time, align, draw, std::move(points)));
                     } else {
                         float x, y, z;
                         transformElement->QueryFloatAttribute("x", &x);
