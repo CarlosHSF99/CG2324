@@ -32,12 +32,13 @@ class TimedTranslate : public Transform
 private:
     float time;
     bool align;
+    bool draw;
     std::vector<Point3> points;
     std::vector<Point3> curve{};
     Vector3 yVector{0, 1, 0};
 
 public:
-    TimedTranslate(float time, bool align, std::vector<Point3> points);
+    TimedTranslate(float time, bool align, bool draw, std::vector<Point3> points);
 
     void apply(float gt) noexcept override;
 
