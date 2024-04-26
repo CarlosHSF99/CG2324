@@ -13,11 +13,11 @@ namespace XMLWorldLoader
     // World load(const std::string &filename)
     World load(char *filename)
     {
-        int width, height;
-        float positionX, positionY, positionZ;
-        float lookAtX, lookAtY, lookAtZ;
-        float upX, upY, upZ;
-        float fov, near, far;
+        int width{}, height{};
+        float positionX{}, positionY{}, positionZ{};
+        float lookAtX{}, lookAtY{}, lookAtZ{};
+        float upX{}, upY{}, upZ{};
+        float fov{}, near{}, far{};
         Group topGroup;
 
         XMLDocument doc;
@@ -62,13 +62,6 @@ namespace XMLWorldLoader
                 if (groupElement) {
                     topGroup = parseGroup(groupElement);
                 }
-
-                /*
-                while (groupElement) {
-                    groups.push_back(parseGroup(groupElement));
-                    groupElement = groupElement->NextSiblingElement("group");
-                }
-                 */
             }
         } else {
             std::cerr << "Failed to load file." << std::endl;
@@ -91,21 +84,45 @@ namespace XMLWorldLoader
             XMLElement *transformElement = transformsElement->FirstChildElement();
             while (transformElement) {
                 if (transformElement->Name() == std::string("translate")) {
+                    if (transformElement->Attribute("time")) {
+                        float time;
+                        bool align, draw;
+                        std::vector<Point3> points;
+                        transformElement->QueryFloatAttribute("time", &time);
+                        transformElement->QueryBoolAttribute("align", &align);
+                        transformElement->QueryBoolAttribute("draw", &draw);
+                        XMLElement *pointElement = transformElement->FirstChildElement("point");
+                        while (pointElement) {
+                            float x, y, z;
+                            pointElement->QueryFloatAttribute("x", &x);
+                            pointElement->QueryFloatAttribute("y", &y);
+                            pointElement->QueryFloatAttribute("z", &z);
+                            points.emplace_back(x, y, z);
+                            pointElement = pointElement->NextSiblingElement("point");
+                        }
+                        transforms.push_back(std::make_unique<TimedTranslate>(time, align, draw, std::move(points)));
+                    } else {
+                        float x, y, z;
+                        transformElement->QueryFloatAttribute("x", &x);
+                        transformElement->QueryFloatAttribute("y", &y);
+                        transformElement->QueryFloatAttribute("z", &z);
+                        transforms.push_back(std::make_unique<Translate>(x, y, z));
+                    }
+                } else if (transformElement->Name() == std::string("rotate")) {
                     float x, y, z;
                     transformElement->QueryFloatAttribute("x", &x);
                     transformElement->QueryFloatAttribute("y", &y);
                     transformElement->QueryFloatAttribute("z", &z);
-                    transforms.push_back(std::make_unique<Translate>(x, y, z));
-                }
-                else if (transformElement->Name() == std::string("rotate")) {
-                    float angle, x, y, z;
-                    transformElement->QueryFloatAttribute("angle", &angle);
-                    transformElement->QueryFloatAttribute("x", &x);
-                    transformElement->QueryFloatAttribute("y", &y);
-                    transformElement->QueryFloatAttribute("z", &z);
-                    transforms.push_back(std::make_unique<Rotate>(angle, x, y, z));
-                }
-                else if (transformElement->Name() == std::string("scale")) {
+                    if (transformElement->Attribute("time")) {
+                        float time;
+                        transformElement->QueryFloatAttribute("time", &time);
+                        transforms.push_back(std::make_unique<TimedRotate>(time, x, y, z));
+                    } else {
+                        float angle;
+                        transformElement->QueryFloatAttribute("angle", &angle);
+                        transforms.push_back(std::make_unique<Rotate>(angle, x, y, z));
+                    }
+                } else if (transformElement->Name() == std::string("scale")) {
                     float x, y, z;
                     transformElement->QueryFloatAttribute("x", &x);
                     transformElement->QueryFloatAttribute("y", &y);

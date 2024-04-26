@@ -12,12 +12,12 @@ void Group::initBuffers()
     }
 }
 
-void Group::draw() const
+void Group::draw(float time) const
 {
     glPushMatrix();
 
     for (const auto &transform: this->transforms) {
-        transform->apply();
+        transform->apply(time);
     }
 
     for (const auto &model: this->models) {
@@ -25,7 +25,7 @@ void Group::draw() const
     }
 
     for (const auto &group: this->subgroups) {
-        group.draw();
+        group.draw(time);
     }
 
     glPopMatrix();

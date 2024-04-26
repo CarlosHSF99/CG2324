@@ -8,6 +8,7 @@
 using std::vector, std::array;
 
 array<float, 4> multMatrixVector(const float m[4][4], const array<float, 4> &v);
+
 Point3 generatePoint(vector<Point3> patchControlPoints, array<float, 4> um, array<float, 4> vm);
 
 // bezier matrix
@@ -18,11 +19,11 @@ static const float M[4][4] = {
         {+1.0f, +0.0f, +0.0f, +0.0f}
 };
 
-PatchModel::PatchModel(int tessellationLevel, const vector<vector<int>>& indicesList, vector<Point3> controlPoints)
+PatchModel::PatchModel(int tessellationLevel, const vector<array<int, 16>> &indicesList, vector<Point3> controlPoints)
 {
     // for each patch
     for (auto &indices: indicesList) {
-        // generate control points for current patch
+        // collect control points for current patch
         vector<Point3> patchControlPoints;
         for (const auto &index: indices) {
             patchControlPoints.push_back(controlPoints[index]);
@@ -31,8 +32,8 @@ PatchModel::PatchModel(int tessellationLevel, const vector<vector<int>>& indices
         // generate vectors for current patch
         vector<array<float, 4>> vectors;
         for (int i = 0; i <= tessellationLevel; i++) {
-            float u = (float) i / (float) tessellationLevel;
-            vectors.push_back(multMatrixVector(M, {powf(u, 3), powf(u, 2), u, 1}));
+            float t = (float) i / (float) tessellationLevel;
+            vectors.push_back(multMatrixVector(M, {powf(t, 3), powf(t, 2), t, 1}));
         }
 
         // generate vertices for current patch
@@ -71,35 +72,31 @@ PatchModel::PatchModel(const std::string &filename, int tessellationLevel)
         return;
     }
 
-    vector<std::vector<int>> indicesList;
-    vector<Point3> patchesControlPoints;
-
     int nPatches;
     file >> nPatches;
+    vector<array<int, 16>> indicesList(nPatches);
 
     // read vertices indices for each patch
     for (auto i = 0; i < nPatches; i++) {
         vector<int> patch;
         int index;
-        char comma;
-        file >> index;
-        patch.push_back(index);
-        for (int j = 1; j < 16; j++) {
-            file >> comma >> index;
-            patch.push_back(index);
+        for (int j = 0; j < 16; j++) {
+            file >> index;
+            file.ignore();
+            indicesList[i][j] = index;
         }
-        indicesList.push_back(patch);
     }
 
     int nControlPoints;
     file >> nControlPoints;
+    vector<Point3> patchesControlPoints(nControlPoints);
 
     // read control points
-    for (auto k = 0; k < nControlPoints; k++) {
+    for (auto i = 0; i < nControlPoints; i++) {
         float x, y, z;
         char comma;
         file >> x >> comma >> y >> comma >> z;
-        patchesControlPoints.emplace_back(x, y, z);
+        patchesControlPoints[i] = {x, y, z};
     }
 
     *this = PatchModel(tessellationLevel, indicesList, patchesControlPoints);
@@ -119,17 +116,13 @@ array<float, 4> multMatrixVector(const float m[4][4], const array<float, 4> &v)
 
 Point3 generatePoint(vector<Point3> patchControlPoints, array<float, 4> um, array<float, 4> vm)
 {
-    Vector3 ump[4];
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            ump[i] += Vector3(patchControlPoints[j * 4 + i]) * um[j];
-        }
-    }
-
     Point3 pointUV;
     for (int i = 0; i < 4; i++) {
-        pointUV = pointUV + ump[i] * vm[i];
+        Vector3 ump;
+        for (int j = 0; j < 4; j++) {
+            ump += Vector3(patchControlPoints[j * 4 + i]) * um[j];
+        }
+        pointUV = pointUV + ump * vm[i];
     }
-
     return pointUV;
 }

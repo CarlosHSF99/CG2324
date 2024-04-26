@@ -9,7 +9,7 @@
 class PatchModel : public Model
 {
 public:
-    PatchModel(int tesselationLevel, const std::vector<std::vector<int>>& indicesList, std::vector<Point3> controlPoints);
+    PatchModel(int tesselationLevel, const std::vector<std::array<int, 16>>& indicesList, std::vector<Point3> controlPoints);
 
     PatchModel(const std::string &filename, int tessellationLevel);
 };

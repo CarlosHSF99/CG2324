@@ -2,14 +2,16 @@
 #define CG2324_TRANSFORM_H
 
 
+#include <vector>
 #include "utils/vector3.h"
+#include "utils/point3.h"
 
 class Transform
 {
 public:
     virtual ~Transform() = default;
 
-    virtual void apply() const noexcept = 0;
+    virtual void apply(float time) noexcept = 0;
 };
 
 class Translate : public Transform
@@ -22,7 +24,29 @@ public:
 
     Translate(float x, float y, float z) : vector(x, y, z) {}
 
-    void apply() const noexcept override;
+    void apply(float time) noexcept override;
+};
+
+class TimedTranslate : public Transform
+{
+private:
+    float time;
+    bool align;
+    bool draw;
+    std::vector<Point3> points;
+    std::vector<Point3> curve{};
+    Vector3 yVector{0, 1, 0};
+
+public:
+    TimedTranslate(float time, bool align, bool draw, std::vector<Point3> points);
+
+    void apply(float gt) noexcept override;
+
+private:
+    [[nodiscard]] std::pair<Point3, Vector3> getGlobalCatmullRomPoint(float gt) const;
+
+    void drawCurve() const;
+
 };
 
 class Rotate : public Transform
@@ -36,7 +60,21 @@ public:
 
     Rotate(float angle, float x, float y, float z) : angle(angle), vector(x, y, z) {}
 
-    void apply() const noexcept override;
+    void apply(float time) noexcept override;
+};
+
+class TimedRotate : public Transform
+{
+private:
+    float anglePerSecond;
+    Vector3 vector;
+
+public:
+    TimedRotate(float time, Vector3 vector);
+
+    TimedRotate(float time, float x, float y, float z);
+
+    void apply(float gt) noexcept override;
 };
 
 class Scale : public Transform
@@ -47,7 +85,7 @@ private:
 public:
     Scale(float x, float y, float z) : factorX(x), factorY(y), factorZ(z) {}
 
-    void apply() const noexcept override;
+    void apply(float time) noexcept override;
 };
 
 

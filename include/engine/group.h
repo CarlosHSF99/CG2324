@@ -22,7 +22,7 @@ public:
 
     void initBuffers();
 
-    void draw() const;
+    void draw(float time) const;
 };
 
 
