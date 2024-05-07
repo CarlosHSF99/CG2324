@@ -2,7 +2,7 @@
 #define CG2324_BOX_H
 
 
-#include "utils/model.h"
+#include "generator/model.h"
 
 class Box : public Model
 {

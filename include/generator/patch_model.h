@@ -4,7 +4,7 @@
 
 #include <vector>
 #include "utils/point3.h"
-#include "utils/model.h"
+#include "generator/model.h"
 
 class PatchModel : public Model
 {

@@ -4,8 +4,8 @@
 
 #include <vector>
 #include <memory>
-#include "utils/model.h"
 #include "engine/transform.h"
+#include "engine/model.h"
 
 class Group
 {
@@ -19,8 +19,6 @@ public:
 
     Group(std::vector<std::unique_ptr<Transform>> transforms, std::vector<Model> models, std::vector<Group> subgroups)
             : transforms(std::move(transforms)), models(std::move(models)), subgroups(std::move(subgroups)) {}
-
-    void initBuffers();
 
     void draw(float time) const;
 };

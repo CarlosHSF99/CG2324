@@ -10,6 +10,7 @@ add_executable(${PROJECT_NAME}
         world.cpp
         camera.cpp
         window.cpp
+        model.cpp
 )
 
 find_package(OpenGL REQUIRED)

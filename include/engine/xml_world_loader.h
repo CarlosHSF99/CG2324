@@ -6,7 +6,9 @@
 
 namespace XMLWorldLoader
 {
-    World load(char *filename);
+    Window loadWindow(char *filename);
+
+    World loadWorld(char *filename);
 }
 
 

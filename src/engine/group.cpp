@@ -1,16 +1,4 @@
-#include <GL/glut.h>
 #include "engine/group.h"
-
-void Group::initBuffers()
-{
-    for (auto &model: this->models) {
-        model.initBuffer();
-    }
-
-    for (auto &group: this->subgroups) {
-        group.initBuffers();
-    }
-}
 
 void Group::draw(float time) const
 {
