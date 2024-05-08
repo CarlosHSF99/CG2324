@@ -5,12 +5,15 @@ project(engine)
 add_executable(${PROJECT_NAME}
         main.cpp
         group.cpp
-        transform.cpp
-        xml_world_loader.cpp
         world.cpp
         camera.cpp
         window.cpp
         model.cpp
+        transform/timed_translate.cpp
+        transform/translate.cpp
+        transform/scale.cpp
+        transform/timed_rotate.cpp
+        transform/rotate.cpp
 )
 
 find_package(OpenGL REQUIRED)

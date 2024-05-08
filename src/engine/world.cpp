@@ -1,12 +1,29 @@
+#include <map>
+#include <iostream>
+#include "deps/tinyxml2.h"
 #include "engine/world.h"
 
+using namespace tinyxml2;
+
 void drawAxis();
+
+World::World(XMLElement *worldElement)
+{
+    XMLElement *cameraElement = worldElement->FirstChildElement("camera");
+    if (cameraElement) {
+        camera = Camera(cameraElement);
+    }
+    XMLElement *groupElement = worldElement->FirstChildElement("group");
+    if (groupElement) {
+        group = Group(groupElement);
+    }
+}
 
 void World::renderScene()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    this->camera.place();
+    camera.place();
 
     drawAxis();
 

@@ -4,7 +4,7 @@
 
 #include "engine/group.h"
 #include "engine/camera.h"
-#include "engine/window.h"
+#include "deps/tinyxml2.h"
 
 class World
 {
@@ -16,6 +16,8 @@ public:
     World() = default;
 
     World(Camera camera, Group group) : camera(std::move(camera)), group(std::move(group)) {}
+
+    explicit World(tinyxml2::XMLElement *worldElement);
 
     void renderScene();
 

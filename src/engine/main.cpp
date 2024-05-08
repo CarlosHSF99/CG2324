@@ -1,11 +1,11 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/glut.h>
-#include <cmath>
+#include "engine/window.h"
 #include "engine/world.h"
-#include "engine/xml_world_loader.h"
+#include "deps/tinyxml2.h"
 
-using std::cos, std::sin, std::sqrt, std::atan2, std::asin;
+using namespace tinyxml2;
 
 int main(int argc, char **argv)
 {
@@ -14,18 +14,29 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    Window window = XMLWorldLoader::loadWindow(argv[1]);
+    XMLDocument doc;
+    if (doc.LoadFile(argv[1]) != XML_SUCCESS) {
+        std::cerr << "Failed to load file." << std::endl;
+        return 1;
+    }
+
+    XMLElement *worldElement = doc.FirstChildElement("world");
+    if (!worldElement) {
+        return 1;
+    }
+
+    Window window(worldElement->FirstChildElement("window"));
 
     // init GLUT and the window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(window.x, window.y);
     glutInitWindowSize(window.width, window.height);
-    glutCreateWindow(window.title);
+    glutCreateWindow(argv[1]);
 
     glewInit();
 
-    static World world = XMLWorldLoader::loadWorld(argv[1]);
+    static World world(worldElement);
 
     // callback registry
     glutDisplayFunc([]() -> void { world.renderScene(); });

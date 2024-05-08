@@ -4,6 +4,7 @@
 
 #include "utils/point3.h"
 #include "utils/vector3.h"
+#include "deps/tinyxml2.h"
 
 class Camera
 {
@@ -19,6 +20,8 @@ public:
     Camera() = default;
 
     Camera(const Point3 &position, const Point3 &lookAt, const Vector3 &up, float fov, float near, float far);
+
+    explicit Camera(tinyxml2::XMLElement *cameraElement);
 
     void place();
 

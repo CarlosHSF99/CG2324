@@ -2,7 +2,7 @@
 #define CG2324_CONE_H
 
 
-#include "model.h"
+#include "generator/model.h"
 
 class Cone : public Model
 {

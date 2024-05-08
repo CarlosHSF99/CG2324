@@ -6,87 +6,99 @@
 #include "utils/vector3.h"
 #include "utils/point3.h"
 
-class Transform
+namespace transform
 {
-public:
-    virtual ~Transform() = default;
+    class Transform
+    {
+    public:
+        virtual ~Transform() = default;
 
-    virtual void apply(float time) noexcept = 0;
-};
+        virtual void apply(float time) noexcept = 0;
+    };
 
-class Translate : public Transform
-{
-private:
-    Vector3 vector;
+    class Translate : public Transform
+    {
+    private:
+        Vector3 vector;
 
-public:
-    explicit Translate(Vector3 vector) : vector(vector) {}
+    public:
+        explicit Translate(Vector3 vector) : vector(vector) {}
 
-    Translate(float x, float y, float z) : vector(x, y, z) {}
+        Translate(float x, float y, float z) : vector(x, y, z) {}
 
-    void apply(float time) noexcept override;
-};
+        explicit Translate(tinyxml2::XMLElement *transformElement);
 
-class TimedTranslate : public Transform
-{
-private:
-    float time;
-    bool align;
-    bool draw;
-    std::vector<Point3> points;
-    std::vector<Point3> curve{};
-    Vector3 yVector{0, 1, 0};
+        void apply(float time) noexcept override;
+    };
 
-public:
-    TimedTranslate(float time, bool align, bool draw, std::vector<Point3> points);
+    class TimedTranslate : public Transform
+    {
+    private:
+        float time{};
+        bool align{};
+        bool draw{};
+        std::vector<Point3> points{};
+        std::vector<Point3> curve{};
+        Vector3 yVector{0, 1, 0};
 
-    void apply(float gt) noexcept override;
+    public:
+        TimedTranslate(float time, bool align, bool draw, std::vector<Point3> points);
 
-private:
-    [[nodiscard]] std::pair<Point3, Vector3> getGlobalCatmullRomPoint(float gt) const;
+        explicit TimedTranslate(tinyxml2::XMLElement *transformElement);
 
-    void drawCurve() const;
+        void apply(float gt) noexcept override;
 
-};
+    private:
+        [[nodiscard]] std::pair<Point3, Vector3> getGlobalCatmullRomPoint(float gt) const;
 
-class Rotate : public Transform
-{
-private:
-    float angle;
-    Vector3 vector;
+        void drawCurve() const;
+    };
 
-public:
-    Rotate(float angle, Vector3 vector) : angle(angle), vector(vector) {}
+    class Rotate : public Transform
+    {
+    private:
+        float angle{};
+        Vector3 vector;
 
-    Rotate(float angle, float x, float y, float z) : angle(angle), vector(x, y, z) {}
+    public:
+        Rotate(float angle, Vector3 vector) : angle(angle), vector(vector) {}
 
-    void apply(float time) noexcept override;
-};
+        Rotate(float angle, float x, float y, float z) : angle(angle), vector(x, y, z) {}
 
-class TimedRotate : public Transform
-{
-private:
-    float anglePerSecond;
-    Vector3 vector;
+        explicit Rotate(tinyxml2::XMLElement *transformElement);
 
-public:
-    TimedRotate(float time, Vector3 vector);
+        void apply(float time) noexcept override;
+    };
 
-    TimedRotate(float time, float x, float y, float z);
+    class TimedRotate : public Transform
+    {
+    private:
+        float anglePerSecond;
+        Vector3 vector;
 
-    void apply(float gt) noexcept override;
-};
+    public:
+        TimedRotate(float time, Vector3 vector);
 
-class Scale : public Transform
-{
-private:
-    float factorX, factorY, factorZ;
+        TimedRotate(float time, float x, float y, float z);
 
-public:
-    Scale(float x, float y, float z) : factorX(x), factorY(y), factorZ(z) {}
+        explicit TimedRotate(tinyxml2::XMLElement *transformElement);
 
-    void apply(float time) noexcept override;
-};
+        void apply(float gt) noexcept override;
+    };
+
+    class Scale : public Transform
+    {
+    private:
+        float factorX{}, factorY{}, factorZ{};
+
+    public:
+        Scale(float x, float y, float z) : factorX(x), factorY(y), factorZ(z) {}
+
+        explicit Scale(tinyxml2::XMLElement *transformElement);
+
+        void apply(float time) noexcept override;
+    };
+}
 
 
 #endif //CG2324_TRANSFORM_H
