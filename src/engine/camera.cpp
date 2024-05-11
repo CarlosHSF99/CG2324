@@ -1,10 +1,39 @@
 #include <GL/glut.h>
 #include <cmath>
+#include "deps/tinyxml2.h"
 #include "engine/camera.h"
+
+using namespace tinyxml2;
 
 Camera::Camera(const Point3 &position, const Point3 &lookAt, const Vector3 &up, float fov, float near, float far)
         : position(position), lookAt(lookAt), up(up), fov(fov), near(near), far(far)
 {
+    radius = sqrtf(powf(position.x - lookAt.x, 2) + powf(position.y - lookAt.y, 2) + powf(position.z - lookAt.z, 2));
+    pitch = asinf((position.y - lookAt.y) / radius);
+    yaw = atan2f(position.x - lookAt.x, position.z - lookAt.z);
+}
+
+Camera::Camera(tinyxml2::XMLElement *cameraElement)
+{
+    XMLElement *positionElement = cameraElement->FirstChildElement("position");
+    if (positionElement) {
+        position = Point3(positionElement);
+    }
+    XMLElement *lookAtElement = cameraElement->FirstChildElement("lookAt");
+    if (lookAtElement) {
+        lookAt = Point3(lookAtElement);
+    }
+    XMLElement *upElement = cameraElement->FirstChildElement("up");
+    if (upElement) {
+        up = Vector3(upElement);
+    }
+    XMLElement *projectionElement = cameraElement->FirstChildElement("projection");
+    if (projectionElement) {
+        projectionElement->QueryFloatAttribute("fov", &fov);
+        projectionElement->QueryFloatAttribute("near", &near);
+        projectionElement->QueryFloatAttribute("far", &far);
+    }
+
     radius = sqrtf(powf(position.x - lookAt.x, 2) + powf(position.y - lookAt.y, 2) + powf(position.z - lookAt.z, 2));
     pitch = asinf((position.y - lookAt.y) / radius);
     yaw = atan2f(position.x - lookAt.x, position.z - lookAt.z);

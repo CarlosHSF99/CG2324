@@ -1,10 +1,9 @@
 #include <cmath>
 #include <fstream>
-#include <GL/glew.h>
 #include <iostream>
 #include <iterator>
 #include "utils/vector3.h"
-#include "utils/model.h"
+#include "generator/model.h"
 
 using std::string, std::cerr, std::endl, std::move,
         std::cos, std::sin,
@@ -22,11 +21,9 @@ Model::Model(const string &filename)
         return;
     }
 
-    float x, y, z;
-    while (file.read(reinterpret_cast<char *>(&x), sizeof(x)) &&
-           file.read(reinterpret_cast<char *>(&y), sizeof(y)) &&
-           file.read(reinterpret_cast<char *>(&z), sizeof(z))) {
-        vertices.emplace_back(x, y, z);
+    float coords[3];
+    while (file.read(reinterpret_cast<char *>(coords), sizeof(coords))) {
+        vertices.emplace_back(coords[0], coords[1], coords[2]);
     }
 }
 
@@ -37,20 +34,6 @@ Model::Model(const vector<Model> &models)
             vertices.push_back(vertex);
         }
     }
-}
-
-void Model::initBuffer()
-{
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) (3 * vertices.size() * sizeof(float)), vertices.data(), GL_STATIC_DRAW);
-}
-
-void Model::draw() const
-{
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glVertexPointer(3, GL_FLOAT, 0, nullptr);
-    glDrawArrays(GL_TRIANGLES, 0, (GLsizei) vertices.size());
 }
 
 void Model::translate(const Vector3 &v)

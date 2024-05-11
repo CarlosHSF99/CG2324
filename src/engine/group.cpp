@@ -1,14 +1,59 @@
-#include <GL/glut.h>
+#include <map>
+#include "deps/tinyxml2.h"
+#include "engine/transform.h"
 #include "engine/group.h"
 
-void Group::initBuffers()
+using namespace tinyxml2;
+using namespace transform;
+
+Group::Group(XMLElement *groupElement)
 {
-    for (auto &model: this->models) {
-        model.initBuffer();
+    XMLElement *transformsElement = groupElement->FirstChildElement("transform");
+    if (transformsElement) {
+        XMLElement *transformElement = transformsElement->FirstChildElement();
+        while (transformElement) {
+            if (transformElement->Name() == std::string("translate")) {
+                if (transformElement->Attribute("time")) {
+                    transforms.push_back(std::make_unique<TimedTranslate>(transformElement));
+                } else {
+                    transforms.push_back(std::make_unique<Translate>(transformElement));
+                }
+            } else if (transformElement->Name() == std::string("rotate")) {
+                if (transformElement->Attribute("time")) {
+                    transforms.push_back(std::make_unique<TimedRotate>(transformElement));
+                } else {
+                    transforms.push_back(std::make_unique<Rotate>(transformElement));
+                }
+            } else if (transformElement->Name() == std::string("scale")) {
+                transforms.push_back(std::make_unique<Scale>(transformElement));
+            }
+            transformElement = transformElement->NextSiblingElement();
+        }
     }
 
-    for (auto &group: this->subgroups) {
-        group.initBuffers();
+    static std::map<std::string, Model> modelBuffers;
+
+    XMLElement *modelsElement = groupElement->FirstChildElement("models");
+    if (modelsElement) {
+        XMLElement *modelElement = modelsElement->FirstChildElement("model");
+        while (modelElement) {
+            const char *file = modelElement->Attribute("file");
+            if (modelBuffers.find(file) != modelBuffers.end()) {
+                models.push_back(modelBuffers[file]);
+            } else {
+                Model model(file);
+                modelBuffers[file] = model;
+                models.push_back(model);
+            }
+            models.emplace_back(file);
+            modelElement = modelElement->NextSiblingElement("model");
+        }
+    }
+
+    XMLElement *subgroupElement = groupElement->FirstChildElement("group");
+    while (subgroupElement) {
+        subgroups.emplace_back(subgroupElement);
+        subgroupElement = subgroupElement->NextSiblingElement("group");
     }
 }
 

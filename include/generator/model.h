@@ -5,26 +5,24 @@
 #include <string>
 #include <vector>
 #include <ostream>
-#include "point3.h"
-#include "vector3.h"
+#include "utils/point3.h"
+#include "utils/vector3.h"
 
 class Model
 {
 protected:
     std::vector<Point3> vertices;
-    unsigned int buffer{};
 
 protected:
     Model() = default;
 
 public:
+
     explicit Model(const std::vector<Point3> &vertices);
 
     explicit Model(const std::vector<Model> &models);
 
     explicit Model(const std::string &filename);
-
-    void initBuffer();
 
     void draw() const;
 
