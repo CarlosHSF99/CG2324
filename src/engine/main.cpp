@@ -25,7 +25,12 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    Window window(worldElement->FirstChildElement("window"));
+    XMLElement *windowElement = worldElement->FirstChildElement("window");
+    if (!windowElement) {
+        return 1;
+    }
+
+    Window window(windowElement);
 
     // init GLUT and the window
     glutInit(&argc, argv);
@@ -39,10 +44,10 @@ int main(int argc, char **argv)
     static World world(worldElement);
 
     // callback registry
-    glutDisplayFunc([]() -> void { world.renderScene(); });
-    glutReshapeFunc([](int w, int h) -> void { world.changeSize(w, h); });
-    glutIdleFunc([]() -> void { world.renderScene(); });
-    glutKeyboardFunc([](unsigned char key, int xx, int yy) -> void { world.processNormalKeys(key, xx, yy); });
+    glutDisplayFunc([]() { world.renderScene(); });
+    glutReshapeFunc([](int w, int h) { world.changeSize(w, h); });
+    glutIdleFunc([]() { world.renderScene(); });
+    glutKeyboardFunc([](unsigned char key, int xx, int yy) { world.processNormalKeys(key, xx, yy); });
 
     // OpenGL settings
     glEnable(GL_DEPTH_TEST);
