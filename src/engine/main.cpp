@@ -52,8 +52,18 @@ int main(int argc, char **argv)
     // OpenGL settings
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_RESCALE_NORMAL);
+
+    // controls global ambient light
+    float amb[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
+
+    // init
     glEnableClientState(GL_VERTEX_ARRAY);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glEnableClientState(GL_NORMAL_ARRAY);
+
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     glutMainLoop();
 

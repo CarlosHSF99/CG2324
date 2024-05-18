@@ -1,36 +1,50 @@
+#include <map>
 #include <ostream>
 #include <fstream>
 #include <iostream>
+#include "deps/tinyxml2.h"
+#include "engine/vertex_buffers.h"
 #include "engine/model.h"
 
-using std::cerr, std::endl, std::ifstream, std::ios, std::string, std::vector;
+using std::cerr, std::endl, std::ifstream, std::ios, std::map, std::string, std::vector;
+using namespace tinyxml2;
 
-Model::Model(const string &filename)
+Model::Model(XMLElement *modelElement)
 {
-    ifstream file(filename, ios::binary);
+    static map<string, VertexBuffers> vertexBuffers;
 
-    if (!file.is_open()) {
-        cerr << "Error opening file " << filename << endl;
-        return;
+    const char *filename = modelElement->Attribute("file");
+
+    if (vertexBuffers.find(filename) != vertexBuffers.end()) {
+        vbos = vertexBuffers[filename];
+    } else {
+        ifstream file(filename, ios::binary);
+
+        if (!file.is_open()) {
+            cerr << "Error opening file " << filename << endl;
+            return;
+        }
+
+        vector<Point3> coords;
+        vector<Vector3> normals;
+
+        float vertex[6];
+        while (file.read(reinterpret_cast<char *>(vertex), sizeof(vertex))) {
+            coords.emplace_back(vertex[0], vertex[1], vertex[2]);
+            normals.emplace_back(vertex[3], vertex[4], vertex[5]);
+        }
+
+        vbos = VertexBuffers(coords, normals);
+        vertexBuffers[filename] = vbos;
     }
 
-    vector<Point3> vertices;
+    XMLElement *colorElement = modelElement->FirstChildElement("color");
 
-    float coords[3];
-    while (file.read(reinterpret_cast<char *>(coords), sizeof(coords))) {
-        vertices.emplace_back(coords[0], coords[1], coords[2]);
-    }
-
-    size = (GLsizei) vertices.size();
-
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) (3 * size * sizeof(float)), vertices.data(), GL_STATIC_DRAW);
+    color = Color(colorElement);
 }
 
 void Model::draw() const
 {
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glVertexPointer(3, GL_FLOAT, 0, nullptr);
-    glDrawArrays(GL_TRIANGLES, 0, size);
+    color.set();
+    vbos.draw();
 }

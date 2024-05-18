@@ -7,7 +7,7 @@
 class Box : public Model
 {
 public:
-    Box(float size, int divisions);
+    Box(double size, int divisions);
 };
 
 

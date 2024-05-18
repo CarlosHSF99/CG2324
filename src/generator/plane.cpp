@@ -1,30 +1,29 @@
-#include <iostream>
 #include "generator/plane.h"
 
-Plane::Plane(float size, int divisions)
+Plane::Plane(double size, int divisions)
 {
-    float originOffset = size / 2;
-    float divisionSize = size / (float) divisions;
+    double originOffset = size / 2;
+    double divisionSize = size / divisions;
+
+    std::vector<Vertex> grid;
+    for (int i = 0; i <= divisions; i++) {
+        for (int j = 0; j <= divisions; j++) {
+            Point3 p(j * divisionSize - originOffset, 0, i * divisionSize - originOffset);
+            Vector3 n(0, 1, 0);
+            grid.emplace_back(p, n);
+        }
+    }
 
     for (int i = 0; i < divisions; i++) {
         for (int j = 0; j < divisions; j++) {
-            // back left corner of the current square
-            float x1 = (float) i * divisionSize - originOffset;
-            float z1 = (float) j * divisionSize - originOffset;
-
-            // front right corner of the current square
-            float x2 = x1 + divisionSize;
-            float z2 = z1 + divisionSize;
-
             // first (back right) triangle
-            vertices.emplace_back(x1, 0, z1);
-            vertices.emplace_back(x2, 0, z2);
-            vertices.emplace_back(x2, 0, z1);
-
+            vertices.push_back(grid[i * (divisions + 1) + j]);
+            vertices.push_back(grid[(i + 1) * (divisions + 1) + j + 1]);
+            vertices.push_back(grid[i * (divisions + 1) + j + 1]);
             // second (front left) triangle
-            vertices.emplace_back(x1, 0, z1);
-            vertices.emplace_back(x1, 0, z2);
-            vertices.emplace_back(x2, 0, z2);
+            vertices.push_back(grid[i * (divisions + 1) + j]);
+            vertices.push_back(grid[(i + 1) * (divisions + 1) + j]);
+            vertices.push_back(grid[(i + 1) * (divisions + 1) + j + 1]);
         }
     }
 }

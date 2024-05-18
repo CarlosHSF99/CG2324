@@ -5,6 +5,7 @@
 #include <vector>
 #include "utils/vector3.h"
 #include "utils/point3.h"
+#include "deps/tinyxml2.h"
 
 namespace transform
 {

@@ -1,4 +1,3 @@
-#include <iostream>
 #include "deps/tinyxml2.h"
 #include "utils/vector3.h"
 #include "utils/point3.h"
@@ -16,6 +15,14 @@ Point3::Point3(XMLElement *vectorElement)
 Point3 Point3::operator+(const Vector3 &v) const
 {
     return {x + v.x, y + v.y, z + v.z};
+}
+
+Point3 Point3::operator+=(const Vector3 &vector)
+{
+    x += vector.x;
+    y += vector.y;
+    z += vector.z;
+    return *this;
 }
 
 ostream &operator<<(ostream &os, const Point3 &point)

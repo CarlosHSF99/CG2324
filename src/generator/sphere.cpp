@@ -6,82 +6,56 @@ Sphere::Sphere(double radius, int slices, int stacks)
     double stackStep = 2 * M_PI / slices; // angle between each slice
     double sliceStep = M_PI / stacks; // angle between each stack
 
-    // bottom and top caps
-    double betaBot = M_PI_2 + sliceStep; // angle of bottom cap
-    double betaTop = M_PI_2 - sliceStep; // angle of top cap
-    double yCap = radius * sin(M_PI_2 - sliceStep); // modulus of height of the caps
+    std::vector<Vertex> grid;
 
-    for (int i = 0; i < slices; i++) {
-        double alpha1 = i * stackStep; // angle of current slice
-        double alpha2 = (i + 1) * stackStep; // angle of next slice
+    grid.emplace_back(Point3(0, -radius, 0), Vector3(0, -1, 0));
 
-        // bottom cap, top right vertex
-        double xBot1 = radius * cos(betaBot) * sin(alpha2);
-        double zBot1 = radius * cos(betaBot) * cos(alpha2);
-
-        // bottom cap, top left vertex
-        double xBot2 = radius * cos(betaBot) * sin(alpha1);
-        double zBot2 = radius * cos(betaBot) * cos(alpha1);
-
-        // bottom cap triangle
-        vertices.emplace_back(0, -radius, 0);
-        vertices.emplace_back(xBot1, -yCap, zBot1);
-        vertices.emplace_back(xBot2, -yCap, zBot2);
-
-        // top cap bottom right vertex
-        double xTop1 = radius * cos(betaTop) * sin(alpha1);
-        double zTop1 = radius * cos(betaTop) * cos(alpha1);
-
-        // top cap, bottom left vertex
-        double xTop2 = radius * cos(betaTop) * sin(alpha2);
-        double zTop2 = radius * cos(betaTop) * cos(alpha2);
-
-        // top cap triangle
-        vertices.emplace_back(0, radius, 0);
-        vertices.emplace_back(xTop1, yCap, zTop1);
-        vertices.emplace_back(xTop2, yCap, zTop2);
-    }
-
-
-    // curved surface
     // for each stack
-    for (int i = 1; i < stacks - 1; i++) {
-        double beta1 = i * sliceStep - M_PI_2; // angle of current stack
-        double beta2 = (i + 1) * sliceStep - M_PI_2; // angle of next stack
-
-        double y1 = radius * sin(beta1); // height of current stack
-        double y2 = radius * sin(beta2); // height of next stack
-
+    for (int i = 1; i < stacks; i++) {
+        double beta = i * sliceStep - M_PI_2f; // angle of current stack
+        double y = radius * sin(beta); // height of current stack
         // for each slice
         for (int j = 0; j < slices; j++) {
-            double alpha1 = j * stackStep; // angle of current slice
-            double alpha2 = (j + 1) * stackStep; // angle of next slice
-
-            // bottom left vertex
-            double x1 = radius * cos(beta1) * sin(alpha1);
-            double z1 = radius * cos(beta1) * cos(alpha1);
-
-            // bottom right vertex
-            double x2 = radius * cos(beta1) * sin(alpha2);
-            double z2 = radius * cos(beta1) * cos(alpha2);
-
-            // top left vertex
-            double x3 = radius * cos(beta2) * sin(alpha1);
-            double z3 = radius * cos(beta2) * cos(alpha1);
-
-            // top right vertex
-            double x4 = radius * cos(beta2) * sin(alpha2);
-            double z4 = radius * cos(beta2) * cos(alpha2);
-
-            // first (bottom left) triangle
-            vertices.emplace_back(x1, y1, z1);
-            vertices.emplace_back(x2, y1, z2);
-            vertices.emplace_back(x3, y2, z3);
-
-            // second (bottom right) triangle
-            vertices.emplace_back(x3, y2, z3);
-            vertices.emplace_back(x2, y1, z2);
-            vertices.emplace_back(x4, y2, z4);
+            double alpha = j * stackStep; // angle of current slice
+            double x = radius * cos(beta) * sin(alpha);
+            double z = radius * cos(beta) * cos(alpha);
+            grid.emplace_back(Point3(x, y, z), Vector3::polar(1, alpha, beta));
         }
+    }
+
+    grid.emplace_back(Point3(0, radius, 0), Vector3(0, 1, 0));
+
+    // bottom cone, one triangle per slice
+    for (int i = 1; i <= slices; i++) {
+        vertices.push_back(grid[0]);
+        vertices.push_back(grid[i % slices + 1]);
+        vertices.push_back(grid[i]);
+    }
+
+    // middle part, two triangles per slice
+    for (int i = 1; i < stacks - 1; i++) {
+        for (int j = 1; j <= slices; j++) {
+            int bottomLeft = (i - 1) * slices + j;
+            int bottomRight = (i - 1) * slices + j % slices + 1;
+            int topLeft = i * slices + j;
+            int topRight = i * slices + j % slices + 1;
+
+            vertices.push_back(grid[bottomLeft]);
+            vertices.push_back(grid[bottomRight]);
+            vertices.push_back(grid[topLeft]);
+
+            vertices.push_back(grid[topLeft]);
+            vertices.push_back(grid[bottomRight]);
+            vertices.push_back(grid[topRight]);
+        }
+    }
+
+    // top cone, one triangle per slice
+    int from = (stacks - 2) * slices;
+    int to = from + slices + 1;
+    for (int i = 1; i <= slices; i++) {
+        vertices.push_back(grid[from + i]);
+        vertices.push_back(grid[from + i % slices + 1]);
+        vertices.push_back(grid[to]);
     }
 }

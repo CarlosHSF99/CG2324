@@ -13,11 +13,13 @@ struct Point3
 
     Point3() : x(0), y(0), z(0) {}
 
-    Point3(float x, float y, float z) : x(x), y(y), z(z) {}
+    Point3(double x, double y, double z) : x((float) x), y((float) y), z((float) z) {}
 
     explicit Point3(tinyxml2::XMLElement *pointElement);
 
     Point3 operator+(const Vector3 &vector) const;
+
+    Point3 operator+=(const Vector3 &vector);
 
     friend std::ostream &operator<<(std::ostream &os, const Point3 &point);
 

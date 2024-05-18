@@ -35,24 +35,24 @@ distribution.
 #if defined(_MSC_VER) && (_MSC_VER >= 1400 ) && (!defined WINCE)
 	// Microsoft Visual Studio, version 2005 and higher. Not WinCE.
 	/*int _snprintf_s(
-	   char *buffer,
+	   char *coordsBuffer,
 	   size_t sizeOfBuffer,
 	   size_t count,
 	   const char *format [,
 		  argument] ...
 	);*/
-	static inline int TIXML_SNPRINTF( char* buffer, size_t size, const char* format, ... )
+	static inline int TIXML_SNPRINTF( char* coordsBuffer, size_t size, const char* format, ... )
 	{
 		va_list va;
 		va_start( va, format );
-		const int result = vsnprintf_s( buffer, size, _TRUNCATE, format, va );
+		const int result = vsnprintf_s( coordsBuffer, size, _TRUNCATE, format, va );
 		va_end( va );
 		return result;
 	}
 
-	static inline int TIXML_VSNPRINTF( char* buffer, size_t size, const char* format, va_list va )
+	static inline int TIXML_VSNPRINTF( char* coordsBuffer, size_t size, const char* format, va_list va )
 	{
-		const int result = vsnprintf_s( buffer, size, _TRUNCATE, format, va );
+		const int result = vsnprintf_s( coordsBuffer, size, _TRUNCATE, format, va );
 		return result;
 	}
 
@@ -2396,7 +2396,7 @@ XMLError XMLDocument::LoadFile( FILE* fp )
     // We'll do the comparison as an unsigned long long, because that's guaranteed to be at
     // least 8 bytes, even on a 32-bit platform.
     if ( filelength >= static_cast<unsigned long long>(maxSizeT) ) {
-        // Cannot handle files which won't fit in buffer together with null terminator
+        // Cannot handle files which won't fit in coordsBuffer together with null terminator
         SetError( XML_ERROR_FILE_READ_ERROR, 0, 0 );
         return _errorID;
     }

@@ -31,21 +31,11 @@ Group::Group(XMLElement *groupElement)
         }
     }
 
-    static std::map<std::string, Model> modelBuffers;
-
     XMLElement *modelsElement = groupElement->FirstChildElement("models");
     if (modelsElement) {
         XMLElement *modelElement = modelsElement->FirstChildElement("model");
         while (modelElement) {
-            const char *file = modelElement->Attribute("file");
-            if (modelBuffers.find(file) != modelBuffers.end()) {
-                models.push_back(modelBuffers[file]);
-            } else {
-                Model model(file);
-                modelBuffers[file] = model;
-                models.push_back(model);
-            }
-            models.emplace_back(file);
+            models.emplace_back(modelElement);
             modelElement = modelElement->NextSiblingElement("model");
         }
     }

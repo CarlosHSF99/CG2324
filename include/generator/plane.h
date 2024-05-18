@@ -7,7 +7,7 @@
 class Plane : public Model
 {
 public:
-    Plane(float size, int divisions);
+    Plane(double size, int divisions);
 };
 
 

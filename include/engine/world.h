@@ -2,14 +2,16 @@
 #define CG2324_WORLD_H
 
 
+#include "deps/tinyxml2.h"
 #include "engine/group.h"
 #include "engine/camera.h"
-#include "deps/tinyxml2.h"
+#include "engine/light.h"
 
 class World
 {
 public:
     Camera camera;
+    std::vector<std::unique_ptr<Light>> lights;
     Group group;
 
 public:

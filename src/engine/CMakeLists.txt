@@ -14,6 +14,13 @@ add_executable(${PROJECT_NAME}
         transform/scale.cpp
         transform/timed_rotate.cpp
         transform/rotate.cpp
+        color.cpp
+        color_rgb.cpp
+        vertex_buffers.cpp
+        light/light.cpp
+        light/directional_light.cpp
+        light/spot_light.cpp
+        light/point_light.cpp
 )
 
 find_package(OpenGL REQUIRED)

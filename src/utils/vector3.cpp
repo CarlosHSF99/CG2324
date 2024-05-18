@@ -18,6 +18,11 @@ Vector3::Vector3(XMLElement *vectorElement)
     vectorElement->QueryFloatAttribute("z", &z);
 }
 
+Vector3 Vector3::polar(double radius, double alpha, double beta)
+{
+    return {radius * cos(beta) * sin(alpha), radius * sin(beta), radius * cos(beta) * cos(alpha)};
+}
+
 Vector3 Vector3::operator+(const Vector3 &v) const
 {
     return {x + v.x, y + v.y, z + v.z};
@@ -31,7 +36,7 @@ Vector3 Vector3::operator+=(const Vector3 &vector)
     return *this;
 }
 
-Vector3 Vector3::operator*(float scalar) const
+Vector3 Vector3::operator*(double scalar) const
 {
     return {x * scalar, y * scalar, z * scalar};
 }
@@ -61,4 +66,10 @@ Vector3 Vector3::normalize(Vector3 v)
 Vector3 Vector3::cross(Vector3 v1, Vector3 v2)
 {
     return {v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x};
+}
+
+std::ostream &operator<<(std::ostream &os, const Vector3 &vector)
+{
+    os << '(' << vector.x << ", " << vector.y << ", " << vector.z << ')';
+    return os;
 }
