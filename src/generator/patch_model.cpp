@@ -6,11 +6,11 @@
 
 using std::array, std::pair, std::vector;
 
-std::pair<array<float, 4>, array<float, 4>> getVectors(float t);
+std::pair<array<double, 4>, array<double, 4>> getVectors(double t);
 
 Vertex
-generateVertex(const vector<Point3> &patchControlPoints, array<float, 4> um, array<float, 4> vm, array<float, 4> ud,
-               array<float, 4> vd);
+generateVertex(const vector<Point3> &patchControlPoints, array<double, 4> um, array<double, 4> vm, array<double, 4> ud,
+               array<double, 4> vd);
 
 PatchModel::PatchModel(const std::string &filename, int tessellationLevel)
 {
@@ -41,7 +41,7 @@ PatchModel::PatchModel(const std::string &filename, int tessellationLevel)
 
     // read control points
     for (auto i = 0; i < nControlPoints; i++) {
-        float x, y, z;
+        double x, y, z;
         char comma;
         file >> x >> comma >> y >> comma >> z;
         patchesControlPoints[i] = {x, y, z};
@@ -61,9 +61,9 @@ PatchModel::PatchModel(int tessellationLevel, const vector<array<int, 16>> &indi
         }
 
         // generate vectors
-        vector<pair<array<float, 4>, array<float, 4>>> vectors;
+        vector<pair<array<double, 4>, array<double, 4>>> vectors;
         for (int i = 0; i <= tessellationLevel; i++) {
-            float t = (float) i / (float) tessellationLevel;
+            double t = (double) i / tessellationLevel;
             vectors.push_back(getVectors(t));
         }
 
@@ -98,8 +98,8 @@ PatchModel::PatchModel(int tessellationLevel, const vector<array<int, 16>> &indi
 }
 
 Vertex
-generateVertex(const vector<Point3> &patchControlPoints, array<float, 4> um, array<float, 4> vm, array<float, 4> ud,
-               array<float, 4> vd)
+generateVertex(const vector<Point3> &patchControlPoints, array<double, 4> um, array<double, 4> vm, array<double, 4> ud,
+               array<double, 4> vd)
 {
     Point3 pointUV;
     Vector3 normalU;
@@ -120,21 +120,21 @@ generateVertex(const vector<Point3> &patchControlPoints, array<float, 4> um, arr
     return {pointUV, normalV.cross(normalU).normalize()};
 }
 
-pair<array<float, 4>, array<float, 4>> getVectors(float t)
+pair<array<double, 4>, array<double, 4>> getVectors(double t)
 {
     // bezier matrix
-    static const float m[4][4] = {
-            {-1.0f, +3.0f, -3.0f, +1.0f},
-            {+3.0f, -6.0f, +3.0f, +0.0f},
-            {-3.0f, +3.0f, +0.0f, +0.0f},
-            {+1.0f, +0.0f, +0.0f, +0.0f}
+    static const double m[4][4] = {
+            {-1.0, +3.0, -3.0, +1.0},
+            {+3.0, -6.0, +3.0, +0.0},
+            {-3.0, +3.0, +0.0, +0.0},
+            {+1.0, +0.0, +0.0, +0.0}
     };
 
-    float tv[]{powf(t, 3), powf(t, 2), t, 1};
-    float tdv[]{3 * powf(t, 2), 2 * t, 1, 0};
+    double tv[]{pow(t, 3), pow(t, 2), t, 1};
+    double tdv[]{3 * pow(t, 2), 2 * t, 1, 0};
 
-    array<float, 4> res1{};
-    array<float, 4> res2{};
+    array<double, 4> res1{};
+    array<double, 4> res2{};
 
     for (int i = 0; i < 4; i++) {
         res1[i] = 0;

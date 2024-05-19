@@ -7,12 +7,10 @@
 
 struct Point3;
 
-class Vector3
+struct Vector3
 {
-public:
     float x{}, y{}, z{};
 
-public:
     Vector3() : x(0), y(0), z(0) {}
 
     Vector3(double x, double y, double z) : x((float) x), y((float) y), z((float) z) {}

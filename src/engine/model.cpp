@@ -39,8 +39,9 @@ Model::Model(XMLElement *modelElement)
     }
 
     XMLElement *colorElement = modelElement->FirstChildElement("color");
-
-    color = Color(colorElement);
+    if (colorElement) {
+        color = Color(colorElement);
+    }
 }
 
 void Model::draw() const

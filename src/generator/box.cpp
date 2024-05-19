@@ -1,110 +1,69 @@
 #include <cmath>
 #include "generator/box.h"
 
-using std::vector;
+using std::pair, std::vector;
 
 Box::Box(double size, int divisions)
 {
-    auto nd = (float) divisions;
-    Point3 startingPoint(-size / 2.f, -size / 2.f, -size / 2.f);
+    static vector<Vector3> normals = {
+            {0,  -1, 0},
+            {0,  0,  1},
+            {1,  0,  0},
+            {0,  0,  -1},
+            {-1, 0,  0},
+            {0,  1,  0},
+    };
 
-    Vector3 nBase(0, -1, 0);
-    Vector3 nTop(0, 1, 0);
-    Vector3 nRight(0, 0, -1);
-    Vector3 nLeft(0, 0, 1);
-    Vector3 nBack(-1, 0, 0);
-    Vector3 nFront(1, 0, 0);
+    double halfSize = size / 2.0;
 
-    for (int i = 0; i < divisions; i++) {
+    vector<Point3> startingPoints = {
+            {-halfSize, -halfSize, halfSize},
+            {-halfSize, halfSize,  halfSize},
+            {halfSize,  -halfSize, halfSize},
+            {halfSize,  -halfSize, -halfSize},
+            {-halfSize, halfSize,  -halfSize},
+            {-halfSize, halfSize,  halfSize}
+    };
+
+    double divSize = size / divisions;
+
+    vector<pair<Vector3, Vector3>> dirs = {
+            {{0,        0,        -divSize}, {divSize, 0,       0}},
+            {{0,        -divSize, 0},        {divSize, 0,       0}},
+            {{0,        0,        -divSize}, {0,       divSize, 0}},
+            {{-divSize, 0,        0},        {0,       divSize, 0}},
+            {{0,        -divSize, 0},        {0,       0,       divSize}},
+            {{divSize,  0,        0},        {0,       0,       -divSize}}
+    };
+
+    vector<Vertex> grid;
+
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j <= divisions; j++) {
+            for (int k = 0; k <= divisions; k++) {
+                Point3 p = startingPoints[i] + dirs[i].first * k + dirs[i].second * j;
+                grid.emplace_back(p, normals[i]);
+            }
+        }
+    }
+
+    for (int i = 0; i < 6; i++) {
+        int sideIndex = i * (divisions + 1) * (divisions + 1);
         for (int j = 0; j < divisions; j++) {
-            Vector3 i1 = Vector3(j, i, 0) * (1 / nd);
-            Vector3 i2 = Vector3(j, i + 1, 0) * (1 / nd);
-            Vector3 i3 = Vector3(j + 1, i, 0) * (1 / nd);
-            Vector3 i4 = Vector3(j + 1, i + 1, 0) * (1 / nd);
+            for (int k = 0; k < divisions; k++) {
+                int bottomLeft = sideIndex + j * (divisions + 1) + k;
+                int bottomRight = bottomLeft + 1;
+                int topLeft = bottomLeft + divisions + 1;
+                int topRight = topLeft + 1;
 
-            // Base triangles
-            Point3 p1 = startingPoint + Vector3(i1.x, 0, i1.y) * size;
-            Point3 p2 = startingPoint + Vector3(i2.x, 0, i2.y) * size;
-            Point3 p3 = startingPoint + Vector3(i3.x, 0, i3.y) * size;
-            Point3 p4 = startingPoint + Vector3(i4.x, 0, i4.y) * size;
+                vertices.push_back(grid[bottomLeft]);
+                vertices.push_back(grid[bottomRight]);
+                vertices.push_back(grid[topLeft]);
 
-            vertices.emplace_back(p3, nBase);
-            vertices.emplace_back(p2, nBase);
-            vertices.emplace_back(p1, nBase);
-
-            vertices.emplace_back(p3, nBase);
-            vertices.emplace_back(p4, nBase);
-            vertices.emplace_back(p2, nBase);
-
-            // Top triangles
-            p1.y = (float) size / 2;
-            p2.y = (float) size / 2;
-            p3.y = (float) size / 2;
-            p4.y = (float) size / 2;
-
-            vertices.emplace_back(p1, nTop);
-            vertices.emplace_back(p2, nTop);
-            vertices.emplace_back(p3, nTop);
-
-            vertices.emplace_back(p2, nTop);
-            vertices.emplace_back(p4, nTop);
-            vertices.emplace_back(p3, nTop);
-
-            // Right triangles
-            p1 = startingPoint + Vector3(i1.x, i1.y, 0) * size;
-            p2 = startingPoint + Vector3(i2.x, i2.y, 0) * size;
-            p3 = startingPoint + Vector3(i3.x, i3.y, 0) * size;
-            p4 = startingPoint + Vector3(i4.x, i4.y, 0) * size;
-
-            vertices.emplace_back(p1, nRight);
-            vertices.emplace_back(p2, nRight);
-            vertices.emplace_back(p3, nRight);
-
-            vertices.emplace_back(p2, nRight);
-            vertices.emplace_back(p4, nRight);
-            vertices.emplace_back(p3, nRight);
-
-            // Left triangles
-            p1.z = (float) size / 2;
-            p2.z = (float) size / 2;
-            p3.z = (float) size / 2;
-            p4.z = (float) size / 2;
-
-            vertices.emplace_back(p3, nLeft);
-            vertices.emplace_back(p2, nLeft);
-            vertices.emplace_back(p1, nLeft);
-
-            vertices.emplace_back(p3, nLeft);
-            vertices.emplace_back(p4, nLeft);
-            vertices.emplace_back(p2, nLeft);
-
-            // Back triangles
-            p1 = startingPoint + Vector3(0, i1.x, i1.y) * size;
-            p2 = startingPoint + Vector3(0, i2.x, i2.y) * size;
-            p3 = startingPoint + Vector3(0, i3.x, i3.y) * size;
-            p4 = startingPoint + Vector3(0, i4.x, i4.y) * size;
-
-            vertices.emplace_back(p3, nBack);
-            vertices.emplace_back(p1, nBack);
-            vertices.emplace_back(p2, nBack);
-
-            vertices.emplace_back(p3, nBack);
-            vertices.emplace_back(p2, nBack);
-            vertices.emplace_back(p4, nBack);
-
-            // Front triangles
-            p1.x = (float) size / 2;
-            p2.x = (float) size / 2;
-            p3.x = (float) size / 2;
-            p4.x = (float) size / 2;
-
-            vertices.emplace_back(p1, nFront);
-            vertices.emplace_back(p3, nFront);
-            vertices.emplace_back(p2, nFront);
-
-            vertices.emplace_back(p2, nFront);
-            vertices.emplace_back(p3, nFront);
-            vertices.emplace_back(p4, nFront);
+                vertices.push_back(grid[topLeft]);
+                vertices.push_back(grid[bottomRight]);
+                vertices.push_back(grid[topRight]);
+            }
         }
     }
 }

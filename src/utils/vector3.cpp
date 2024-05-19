@@ -3,7 +3,6 @@
 #include "utils/vector3.h"
 #include "utils/point3.h"
 
-using std::tuple;
 using namespace tinyxml2;
 
 Vector3::Vector3(const Point3 &p) : x(p.x), y(p.y), z(p.z) {}
