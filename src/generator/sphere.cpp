@@ -38,8 +38,6 @@ Sphere::Sphere(double radius, int slices, int stacks, const std::string &heightM
     ILint th = ilGetInteger(IL_IMAGE_HEIGHT);
     ILubyte *imageData = ilGetData();
 
-    std::cout << tw << "x" << th << std::endl;
-
     double ratioW = (double) tw / slices;
     double ratioH = (double) th / stacks;
 
