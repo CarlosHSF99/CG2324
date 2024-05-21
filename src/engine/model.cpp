@@ -3,6 +3,9 @@
 #include <fstream>
 #include <iostream>
 #include "deps/tinyxml2.h"
+#include "utils/point3.h"
+#include "utils/vector2.h"
+#include "utils/vector3.h"
 #include "engine/vertex_buffers.h"
 #include "engine/model.h"
 
@@ -25,17 +28,24 @@ Model::Model(XMLElement *modelElement)
             return;
         }
 
-        vector<Point3> coords;
+        vector<Point3> positions;
         vector<Vector3> normals;
+        vector<Vector2> texCoords;
 
-        float vertex[6];
+        float vertex[8];
         while (file.read(reinterpret_cast<char *>(vertex), sizeof(vertex))) {
-            coords.emplace_back(vertex[0], vertex[1], vertex[2]);
+            positions.emplace_back(vertex[0], vertex[1], vertex[2]);
             normals.emplace_back(vertex[3], vertex[4], vertex[5]);
+            texCoords.emplace_back(vertex[6], vertex[7]);
         }
 
-        vbos = VertexBuffers(coords, normals);
+        vbos = VertexBuffers(positions, normals, texCoords);
         vertexBuffers[filename] = vbos;
+    }
+
+    XMLElement *textureElement = modelElement->FirstChildElement("texture");
+    if (textureElement) {
+        texture = Texture(textureElement);
     }
 
     XMLElement *colorElement = modelElement->FirstChildElement("color");
@@ -47,5 +57,6 @@ Model::Model(XMLElement *modelElement)
 void Model::draw() const
 {
     color.set();
+    texture.bind();
     vbos.draw();
 }

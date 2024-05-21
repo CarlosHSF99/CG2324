@@ -14,6 +14,9 @@ public:
     std::vector<std::unique_ptr<Light>> lights;
     Group group;
 
+    // draw options
+    bool axis{};
+
 public:
     World() = default;
 

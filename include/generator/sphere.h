@@ -8,6 +8,11 @@ class Sphere : public Model
 {
 public:
     Sphere(double radius, int slices, int stacks);
+
+    Sphere(double radius, int slices, int stacks, const std::string &heightMap, double heightScale);
+
+private:
+    void buildSphere(int slices, int stacks, const std::vector<Vertex> &grid);
 };
 
 

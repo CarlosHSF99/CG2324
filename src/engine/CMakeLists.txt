@@ -21,6 +21,7 @@ add_executable(${PROJECT_NAME}
         light/directional_light.cpp
         light/spot_light.cpp
         light/point_light.cpp
+        texture.cpp
 )
 
 find_package(OpenGL REQUIRED)
@@ -37,6 +38,10 @@ find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
 link_libraries(${GLEW_LIBRARIES})
 
+find_package(DevIL REQUIRED)
+include_directories(${IL_INCLUDE_DIR})
+link_libraries(${IL_LIBRARIES})
+
 target_link_libraries(
         ${PROJECT_NAME}
         utils
@@ -44,4 +49,5 @@ target_link_libraries(
         ${OPENGL_LIBRARIES}
         ${GLUT_LIBRARIES}
         ${GLEW_LIBRARIES}
+        ${IL_LIBRARIES}
 )

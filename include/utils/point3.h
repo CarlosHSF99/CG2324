@@ -24,6 +24,8 @@ struct Point3
     friend std::ostream &operator<<(std::ostream &os, const Point3 &point);
 
     Point3 &operator=(const Point3 &other) noexcept;
+
+    static Point3 polar(double radius, double alpha, double beta);
 };
 
 

@@ -3,17 +3,19 @@
 
 
 #include "point3.h"
+#include "vector2.h"
 #include "vector3.h"
 
 struct Vertex
 {
-    Point3 coords;
+    Point3 position;
     Vector3 normal;
+    Vector2 texCoords;
 
     Vertex() = default;
 
-    Vertex(const Point3 &coords, const Vector3 &normal) :
-            coords(coords), normal(normal) {}
+    Vertex(const Point3 &position, const Vector3 &normal, const Vector2 &texCoords) :
+            position(position), normal(normal), texCoords(texCoords) {}
 
     Vertex &operator=(const Vertex &other) noexcept;
 };

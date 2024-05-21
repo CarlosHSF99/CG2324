@@ -1,3 +1,4 @@
+#include <cmath>
 #include "deps/tinyxml2.h"
 #include "utils/vector3.h"
 #include "utils/point3.h"
@@ -38,4 +39,9 @@ Point3 &Point3::operator=(Point3 const &other) noexcept
         std::construct_at(this, other);
     }
     return *this;
+}
+
+Point3 Point3::polar(double radius, double alpha, double beta)
+{
+    return {radius * cos(beta) * sin(alpha), radius * sin(beta), radius * cos(beta) * cos(alpha)};
 }

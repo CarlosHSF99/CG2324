@@ -42,7 +42,7 @@ Box::Box(double size, int divisions)
         for (int j = 0; j <= divisions; j++) {
             for (int k = 0; k <= divisions; k++) {
                 Point3 p = startingPoints[i] + dirs[i].first * k + dirs[i].second * j;
-                grid.emplace_back(p, normals[i]);
+                grid.emplace_back(p, normals[i], Vector2(j, 1 - k));
             }
         }
     }

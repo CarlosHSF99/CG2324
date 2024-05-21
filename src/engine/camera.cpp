@@ -43,16 +43,16 @@ void Camera::place()
 {
     glLoadIdentity();
 
-    position = {radius * cosf(pitch) * sinf(yaw),
-                radius * sinf(pitch),
-                radius * cosf(pitch) * cosf(yaw)};
+    position = {lookAt.x + radius * cosf(pitch) * sinf(yaw),
+                lookAt.y + radius * sinf(pitch),
+                lookAt.z + radius * cosf(pitch) * cosf(yaw)};
 
     gluLookAt(position.x, position.y, position.z,
               lookAt.x, lookAt.y, lookAt.z,
               up.x, up.y, up.z);
 }
 
-void Camera::reactKey(unsigned char key, int x, int y)
+void Camera::reactKey(unsigned char key, int, int)
 {
     switch (key) {
         case 'w': // Slow pitch up
@@ -95,10 +95,11 @@ void Camera::reactKey(unsigned char key, int x, int y)
             break;
     }
 
-    if (pitch > M_PI_2)
-        pitch = M_PI_2;
-    else if (pitch < -M_PI_2)
-        pitch = -M_PI_2;
+    if (pitch > (M_PI_2 - 0.01)) {
+        pitch = M_PI_2 - 0.01;
+    } else if (pitch < (-M_PI_2 + 0.01)) {
+        pitch = -M_PI_2 + 0.01;
+    }
 }
 
 void Camera::setPerspective(int w, int h) const

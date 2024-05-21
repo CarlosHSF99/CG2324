@@ -12,8 +12,13 @@ add_executable(${PROJECT_NAME}
         model.cpp
 )
 
+find_package(DevIL REQUIRED)
+include_directories(${IL_INCLUDE_DIR})
+link_libraries(${IL_LIBRARIES})
+
 target_link_libraries(
         ${PROJECT_NAME}
         utils
         deps
+        ${IL_LIBRARIES}
 )

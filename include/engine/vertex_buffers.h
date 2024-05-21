@@ -3,20 +3,23 @@
 
 #include <GL/glew.h>
 #include <vector>
-#include "utils/point3.h"
-#include "utils/vector3.h"
+
+struct Point3;
+struct Vector2;
+struct Vector3;
 
 class VertexBuffers
 {
 public:
-    GLuint coordsBuffer{};
+    GLuint positionsBuffer{};
     GLuint normalsBuffer{};
+    GLuint texCoordsBuffer{};
     GLsizei size{};
 
 public:
     VertexBuffers() = default;
 
-    VertexBuffers(const std::vector<Point3> &coords, const std::vector<Vector3> &normals);
+    VertexBuffers(const std::vector<Point3> &positions, const std::vector<Vector3> &normals, const std::vector<Vector2> &texCoords);
 
     void draw() const;
 };

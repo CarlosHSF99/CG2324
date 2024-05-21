@@ -1,6 +1,7 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <IL/il.h>
 #include "engine/window.h"
 #include "engine/world.h"
 #include "deps/tinyxml2.h"
@@ -41,6 +42,10 @@ int main(int argc, char **argv)
 
     glewInit();
 
+    ilInit();
+    ilEnable(IL_ORIGIN_SET);
+    ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
+
     static World world(worldElement);
 
     // callback registry
@@ -53,15 +58,16 @@ int main(int argc, char **argv)
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
     glEnable(GL_RESCALE_NORMAL);
 
     // controls global ambient light
     float amb[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
 
-    // init
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 

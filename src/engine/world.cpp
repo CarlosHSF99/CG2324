@@ -40,7 +40,9 @@ void World::renderScene()
 
     camera.place();
 
-    drawAxis();
+    if (axis) {
+        drawAxis();
+    }
 
     for (const auto &light: lights) {
         light->place();
@@ -81,6 +83,9 @@ void World::processNormalKeys(unsigned char key, int xx, int yy)
     switch (key) {
         case 27: // Quit - ESC Key
             exit(0);
+        case 'x':
+            axis = !axis;
+            break;
         default:
             break;
     }

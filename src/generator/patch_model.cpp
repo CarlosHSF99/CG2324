@@ -10,7 +10,7 @@ std::pair<array<double, 4>, array<double, 4>> getVectors(double t);
 
 Vertex
 generateVertex(const vector<Point3> &patchControlPoints, array<double, 4> um, array<double, 4> vm, array<double, 4> ud,
-               array<double, 4> vd);
+               array<double, 4> vd, double u, double v);
 
 PatchModel::PatchModel(const std::string &filename, int tessellationLevel)
 {
@@ -73,7 +73,9 @@ PatchModel::PatchModel(int tessellationLevel, const vector<array<int, 16>> &indi
             for (int j = 0; j <= tessellationLevel; j++) {
                 auto [uv, udv] = vectors[i];
                 auto [vv, vdv] = vectors[j];
-                patchVertices.emplace_back(generateVertex(patchControlPoints, uv, vv, udv, vdv));
+                double u = (double) i / tessellationLevel;
+                double v = (double) j / tessellationLevel;
+                patchVertices.emplace_back(generateVertex(patchControlPoints, uv, vv, udv, vdv, u, v));
             }
         }
 
@@ -99,7 +101,7 @@ PatchModel::PatchModel(int tessellationLevel, const vector<array<int, 16>> &indi
 
 Vertex
 generateVertex(const vector<Point3> &patchControlPoints, array<double, 4> um, array<double, 4> vm, array<double, 4> ud,
-               array<double, 4> vd)
+               array<double, 4> vd, double u, double v)
 {
     Point3 pointUV;
     Vector3 normalU;
@@ -117,7 +119,7 @@ generateVertex(const vector<Point3> &patchControlPoints, array<double, 4> um, ar
         normalV = normalV + ump * vd[i];
     }
 
-    return {pointUV, normalV.cross(normalU).normalize()};
+    return {pointUV, normalV.cross(normalU).normalize(), Vector2(1 - v, 1 - u)};
 }
 
 pair<array<double, 4>, array<double, 4>> getVectors(double t)
