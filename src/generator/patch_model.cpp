@@ -9,8 +9,8 @@ using std::array, std::pair, std::vector;
 std::pair<array<double, 4>, array<double, 4>> getVectors(double t);
 
 Vertex
-generateVertex(const vector<Point3> &patchControlPoints, array<double, 4> um, array<double, 4> vm, array<double, 4> ud,
-               array<double, 4> vd, double u, double v);
+generateVertex(const vector<Point3> &P, array<double, 4> UM, array<double, 4> VM, array<double, 4> dUM,
+               array<double, 4> dVM, double u, double v);
 
 PatchModel::PatchModel(const std::string &filename, int tessellationLevel)
 {
@@ -52,100 +52,101 @@ PatchModel::PatchModel(const std::string &filename, int tessellationLevel)
 
 PatchModel::PatchModel(int tessellationLevel, const vector<array<int, 16>> &indicesList, vector<Point3> controlPoints)
 {
+    // generate vectors
+    vector<pair<array<double, 4>, array<double, 4>>> vectors;
+    for (int i = 0; i <= tessellationLevel; i++) {
+        vectors.push_back(getVectors((double) i / tessellationLevel));
+    }
+
     // for each patch
     for (auto &indices: indicesList) {
         // collect control points
-        vector<Point3> patchControlPoints;
+        vector<Point3> P;
         for (const auto &index: indices) {
-            patchControlPoints.push_back(controlPoints[index]);
-        }
-
-        // generate vectors
-        vector<pair<array<double, 4>, array<double, 4>>> vectors;
-        for (int i = 0; i <= tessellationLevel; i++) {
-            double t = (double) i / tessellationLevel;
-            vectors.push_back(getVectors(t));
+            P.push_back(controlPoints[index]);
         }
 
         // generate vertices
         vector<Vertex> patchVertices;
         for (int i = 0; i <= tessellationLevel; i++) {
             for (int j = 0; j <= tessellationLevel; j++) {
-                auto [uv, udv] = vectors[i];
-                auto [vv, vdv] = vectors[j];
-                double u = (double) i / tessellationLevel;
-                double v = (double) j / tessellationLevel;
-                patchVertices.emplace_back(generateVertex(patchControlPoints, uv, vv, udv, vdv, u, v));
+                auto [UM, dUM] = vectors[i];
+                auto [VM, dVM] = vectors[j];
+                double u = (double) j / tessellationLevel;
+                double v = (double) i / tessellationLevel;
+                patchVertices.emplace_back(generateVertex(P, UM, VM, dUM, dVM, u, v));
             }
         }
 
         // add patch vertices to model vertices per triangle
         for (int i = 0; i < tessellationLevel; i++) {
             for (int j = 0; j < tessellationLevel; j++) {
-                int a = i * (tessellationLevel + 1) + j;
-                int b = a + tessellationLevel + 1;
+                int bottomLeft = i * (tessellationLevel + 1) + j;
+                int bottomRight = bottomLeft + 1;
+                int topLeft = bottomLeft + tessellationLevel + 1;
+                int topRight = topLeft + 1;
 
                 // triangle 1
-                vertices.emplace_back(patchVertices[a]);
-                vertices.emplace_back(patchVertices[a + 1]);
-                vertices.emplace_back(patchVertices[b]);
+                vertices.emplace_back(patchVertices[bottomLeft]);
+                vertices.emplace_back(patchVertices[bottomRight]);
+                vertices.emplace_back(patchVertices[topLeft]);
 
                 // triangle 2
-                vertices.emplace_back(patchVertices[b]);
-                vertices.emplace_back(patchVertices[a + 1]);
-                vertices.emplace_back(patchVertices[b + 1]);
+                vertices.emplace_back(patchVertices[topLeft]);
+                vertices.emplace_back(patchVertices[bottomRight]);
+                vertices.emplace_back(patchVertices[topRight]);
             }
         }
     }
 }
 
 Vertex
-generateVertex(const vector<Point3> &patchControlPoints, array<double, 4> um, array<double, 4> vm, array<double, 4> ud,
-               array<double, 4> vd, double u, double v)
+generateVertex(const vector<Point3> &P, array<double, 4> UM, array<double, 4> VM, array<double, 4> dUM,
+               array<double, 4> dVM, double u, double v)
 {
     Point3 pointUV;
-    Vector3 normalU;
-    Vector3 normalV;
+    Vector3 tangentU;
+    Vector3 tangentV;
 
     for (int i = 0; i < 4; i++) {
-        Vector3 ump;
-        Vector3 udp;
+        Vector3 UMP;
+        Vector3 dUMP;
         for (int j = 0; j < 4; j++) {
-            ump += Vector3(patchControlPoints[j * 4 + i]) * um[j];
-            udp += Vector3(patchControlPoints[j * 4 + i]) * ud[j];
+            UMP += Vector3(P[j * 4 + i]) * UM[j];
+            dUMP += Vector3(P[j * 4 + i]) * dUM[j];
         }
-        pointUV = pointUV + ump * vm[i];
-        normalU = normalU + udp * vm[i];
-        normalV = normalV + ump * vd[i];
+        pointUV = pointUV + UMP * VM[i];
+        tangentU = tangentU + dUMP * VM[i];
+        tangentV = tangentV + UMP * dVM[i];
     }
 
-    return {pointUV, normalV.cross(normalU).normalize(), Vector2(1 - v, 1 - u)};
+    return {pointUV, tangentV.cross(tangentU).normalize(), Vector2(1 - u, 1 - v)};
 }
 
 pair<array<double, 4>, array<double, 4>> getVectors(double t)
 {
     // bezier matrix
-    static const double m[4][4] = {
+    static const double M[4][4] = {
             {-1.0, +3.0, -3.0, +1.0},
             {+3.0, -6.0, +3.0, +0.0},
             {-3.0, +3.0, +0.0, +0.0},
             {+1.0, +0.0, +0.0, +0.0}
     };
 
-    double tv[]{pow(t, 3), pow(t, 2), t, 1};
-    double tdv[]{3 * pow(t, 2), 2 * t, 1, 0};
+    double T[]{pow(t, 3), pow(t, 2), t, 1};
+    double Td[]{3 * pow(t, 2), 2 * t, 1, 0};
 
-    array<double, 4> res1{};
-    array<double, 4> res2{};
+    array<double, 4> TM{};
+    array<double, 4> dTM{};
 
     for (int i = 0; i < 4; i++) {
-        res1[i] = 0;
-        res2[i] = 0;
+        TM[i] = 0;
+        dTM[i] = 0;
         for (int j = 0; j < 4; j++) {
-            res1[i] += tv[j] * m[i][j];
-            res2[i] += tdv[j] * m[i][j];
+            TM[i] += T[j] * M[i][j];
+            dTM[i] += Td[j] * M[i][j];
         }
     }
 
-    return {res1, res2};
+    return {TM, dTM};
 }
