@@ -44,21 +44,52 @@ Sphere::Sphere(double radius, int slices, int stacks, const std::string &heightM
     double stackStep = 2 * M_PI / slices; // angle between each slice
     double sliceStep = M_PI / stacks; // angle between each stack
 
-    std::vector<Vertex> grid;
+    std::vector<Point3> points;
 
     // for each stack
     for (int i = 0; i <= stacks; i++) {
         double beta = i * sliceStep - M_PI_2f; // angle of current stack
-        double texY = (double) i / stacks;
         // for each slice
         for (int j = 0; j <= slices; j++) {
             double alpha = j * stackStep; // angle of current slice
-            double texX = (double) j / slices;
             int heightMapIndex = (int) round((stacks - i) * ratioH) * tw + (int) round(j * ratioW);
             double heightRadius = radius * (1 + heightScale * imageData[heightMapIndex] / 255.0);
-            Point3 p = Point3::polar(heightRadius, alpha, beta);
-            grid.emplace_back(p, Vector3(p).normalize(), Vector2(texX, texY));
+            points.push_back(Point3::polar(heightRadius, alpha, beta));
         }
+    }
+
+    std::vector<Vertex> grid;
+
+    for (int i = 0; i <= slices; i++) {
+        Point3 p = points[i];
+        grid.emplace_back(p, Vector3(p).normalize(), Vector2((double) i / slices, 0));
+    }
+
+    // for each stack
+    for (int i = 1; i < stacks; i++) {
+        double texY = (double) i / stacks;
+        // for each slice
+        grid.emplace_back(points[i * (slices + 1)], Vector3(points[i * (slices + 1)]).normalize(), Vector2(0, texY));
+        for (int j = 1; j < slices; j++) {
+            double texX = (double) j / slices;
+
+            Point3 p = points[i * (slices + 1) + j];
+            Point3 pOver = points[(i + 1) * (slices + 1) + j];
+            Point3 pUnder = points[(i - 1) * (slices + 1) + j];
+            Point3 pLeft = points[i * (slices + 1) + j - 1];
+            Point3 pRight = points[i * (slices + 1) + j + 1];
+            Vector3 h(pOver, pUnder);
+            Vector3 v(pLeft, pRight);
+            Vector3 n = h.cross(v).normalize();
+
+            grid.emplace_back(p, n, Vector2(texX, texY));
+        }
+        grid.emplace_back(points[i * (slices + 1) + slices], Vector3(points[i * (slices + 1) + slices]).normalize(), Vector2(1, texY));
+    }
+
+    for (int i = 0; i <= slices; i++) {
+        Point3 p = points[stacks * (slices + 1) + i];
+        grid.emplace_back(p, Vector3(p).normalize(), Vector2((double) i / slices, 1));
     }
 
     buildSphere(slices, stacks, grid);
