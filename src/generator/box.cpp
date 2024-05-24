@@ -18,22 +18,22 @@ Box::Box(double size, int divisions)
 
     vector<Point3> startingPoints = {
             {-halfSize, -halfSize, halfSize},
-            {-halfSize, halfSize,  halfSize},
+            {-halfSize, -halfSize, halfSize},
             {halfSize,  -halfSize, halfSize},
             {halfSize,  -halfSize, -halfSize},
-            {-halfSize, halfSize,  -halfSize},
-            {-halfSize, halfSize,  halfSize}
+            {-halfSize, -halfSize, -halfSize},
+            {-halfSize, halfSize,  -halfSize}
     };
 
     double divSize = size / divisions;
 
     vector<pair<Vector3, Vector3>> dirs = {
-            {{0,        0,        -divSize}, {divSize, 0,       0}},
-            {{0,        -divSize, 0},        {divSize, 0,       0}},
-            {{0,        0,        -divSize}, {0,       divSize, 0}},
-            {{-divSize, 0,        0},        {0,       divSize, 0}},
-            {{0,        -divSize, 0},        {0,       0,       divSize}},
-            {{divSize,  0,        0},        {0,       0,       -divSize}}
+            {{0,        0, -divSize}, {divSize, 0,       0}},
+            {{divSize,  0, 0},        {0,       divSize, 0}},
+            {{0,        0, -divSize}, {0,       divSize, 0}},
+            {{-divSize, 0, 0},        {0,       divSize, 0}},
+            {{0,        0, divSize},  {0,       divSize, 0}},
+            {{0,        0, divSize},  {divSize, 0,       0}}
     };
 
     vector<Vertex> grid;
@@ -42,7 +42,7 @@ Box::Box(double size, int divisions)
         for (int j = 0; j <= divisions; j++) {
             for (int k = 0; k <= divisions; k++) {
                 Point3 p = startingPoints[i] + dirs[i].first * k + dirs[i].second * j;
-                grid.emplace_back(p, normals[i], Vector2(j, 1 - k));
+                grid.emplace_back(p, normals[i], Vector2((double) k / divisions, (double) j / divisions));
             }
         }
     }
@@ -58,10 +58,10 @@ Box::Box(double size, int divisions)
 
                 vertices.push_back(grid[bottomLeft]);
                 vertices.push_back(grid[bottomRight]);
-                vertices.push_back(grid[topLeft]);
+                vertices.push_back(grid[topRight]);
 
                 vertices.push_back(grid[topLeft]);
-                vertices.push_back(grid[bottomRight]);
+                vertices.push_back(grid[bottomLeft]);
                 vertices.push_back(grid[topRight]);
             }
         }
