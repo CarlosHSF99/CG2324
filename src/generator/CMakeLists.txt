@@ -4,12 +4,12 @@ project(generator)
 
 add_executable(${PROJECT_NAME}
         main.cpp
-        plane.cpp
-        box.cpp
-        sphere.cpp
-        cone.cpp
-        patch_model.cpp
-        model.cpp
+        models/plane.cpp
+        models/box.cpp
+        models/sphere.cpp
+        models/cone.cpp
+        models/patch_model.cpp
+        models/model.cpp
 )
 
 find_package(DevIL REQUIRED)

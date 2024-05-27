@@ -1,11 +1,11 @@
 #include <iostream>
 #include <fstream>
 
-#include "generator/plane.h"
-#include "generator/box.h"
-#include "generator/sphere.h"
-#include "generator/cone.h"
-#include "generator/patch_model.h"
+#include "generator/models/plane.h"
+#include "generator/models/box.h"
+#include "generator/models/sphere.h"
+#include "generator/models/cone.h"
+#include "generator/models/patch_model.h"
 
 using std::cout, std::endl, std::string, std::ofstream, std::ifstream, std::tuple;
 

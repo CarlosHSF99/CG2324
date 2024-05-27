@@ -2,8 +2,8 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <IL/il.h>
-#include "engine/window.h"
-#include "engine/world.h"
+#include "engine/scene/window.h"
+#include "engine/scene/world.h"
 #include "deps/tinyxml2.h"
 
 using namespace tinyxml2;
@@ -68,8 +68,6 @@ int main(int argc, char **argv)
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     glutMainLoop();
 
