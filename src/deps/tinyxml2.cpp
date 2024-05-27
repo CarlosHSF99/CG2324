@@ -21,7 +21,7 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
-#include "deps/tinyxml2.h"
+#include "tinyxml2.h"
 
 #include <new>		// yes, this one new style header, is in the Android SDK.
 #if defined(ANDROID_NDK) || defined(__BORLANDC__) || defined(__QNXNTO__)
@@ -35,24 +35,24 @@ distribution.
 #if defined(_MSC_VER) && (_MSC_VER >= 1400 ) && (!defined WINCE)
 	// Microsoft Visual Studio, version 2005 and higher. Not WinCE.
 	/*int _snprintf_s(
-	   char *buffer,
+	   char *coordsBuffer,
 	   size_t sizeOfBuffer,
 	   size_t count,
 	   const char *format [,
 		  argument] ...
 	);*/
-	static inline int TIXML_SNPRINTF( char* buffer, size_t size, const char* format, ... )
+	static inline int TIXML_SNPRINTF( char* coordsBuffer, size_t size, const char* format, ... )
 	{
 		va_list va;
 		va_start( va, format );
-		const int result = vsnprintf_s( buffer, size, _TRUNCATE, format, va );
+		const int result = vsnprintf_s( coordsBuffer, size, _TRUNCATE, format, va );
 		va_end( va );
 		return result;
 	}
 
-	static inline int TIXML_VSNPRINTF( char* buffer, size_t size, const char* format, va_list va )
+	static inline int TIXML_VSNPRINTF( char* coordsBuffer, size_t size, const char* format, va_list va )
 	{
-		const int result = vsnprintf_s( buffer, size, _TRUNCATE, format, va );
+		const int result = vsnprintf_s( coordsBuffer, size, _TRUNCATE, format, va );
 		return result;
 	}
 
@@ -106,14 +106,9 @@ distribution.
 #elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || defined(__CYGWIN__)
 	#define TIXML_FSEEK fseeko
 	#define TIXML_FTELL ftello
-#elif defined(__ANDROID__) 
-    #if __ANDROID_API__ > 24
-        #define TIXML_FSEEK fseeko64
-        #define TIXML_FTELL ftello64
-    #else
-        #define TIXML_FSEEK fseeko
-        #define TIXML_FTELL ftello
-    #endif
+#elif defined(__ANDROID__) && __ANDROID_API__ > 24
+	#define TIXML_FSEEK fseeko64
+	#define TIXML_FTELL ftello64
 #else
 	#define TIXML_FSEEK fseek
 	#define TIXML_FTELL ftell
@@ -1133,10 +1128,10 @@ char* XMLNode::ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr )
             // Declarations are only allowed at document level
             //
             // Multiple declarations are allowed but all declarations
-            // must occur before anything else. 
+            // must occur before anything else.
             //
-            // Optimized due to a security test case. If the first node is 
-            // a declaration, and the last node is a declaration, then only 
+            // Optimized due to a security test case. If the first node is
+            // a declaration, and the last node is a declaration, then only
             // declarations have so far been added.
             bool wellLocated = false;
 
@@ -2401,7 +2396,7 @@ XMLError XMLDocument::LoadFile( FILE* fp )
     // We'll do the comparison as an unsigned long long, because that's guaranteed to be at
     // least 8 bytes, even on a 32-bit platform.
     if ( filelength >= static_cast<unsigned long long>(maxSizeT) ) {
-        // Cannot handle files which won't fit in buffer together with null terminator
+        // Cannot handle files which won't fit in coordsBuffer together with null terminator
         SetError( XML_ERROR_FILE_READ_ERROR, 0, 0 );
         return _errorID;
     }
@@ -2509,7 +2504,7 @@ void XMLDocument::ClearError() {
 
 void XMLDocument::SetError( XMLError error, int lineNum, const char* format, ... )
 {
-    TIXMLASSERT( error >= 0 && error < XML_ERROR_COUNT );
+    TIXMLASSERT(error >= 0 && error < XML_ERROR_COUNT);
     _errorID = error;
     _errorLineNum = lineNum;
 	_errorStr.Reset();
@@ -2518,7 +2513,8 @@ void XMLDocument::SetError( XMLError error, int lineNum, const char* format, ...
     char* buffer = new char[BUFFER_SIZE];
 
     TIXMLASSERT(sizeof(error) <= sizeof(int));
-    TIXML_SNPRINTF(buffer, BUFFER_SIZE, "Error=%s ErrorID=%d (0x%x) Line number=%d", ErrorIDToName(error), int(error), int(error), lineNum);
+    TIXML_SNPRINTF(buffer, BUFFER_SIZE, "Error=%s ErrorID=%d (0x%x) Line number=%d",
+        ErrorIDToName(error), static_cast<int>(error), static_cast<unsigned int>(error), lineNum);
 
 	if (format) {
 		size_t len = strlen(buffer);

@@ -1,11 +1,11 @@
 #include <iostream>
 #include <fstream>
 
-#include "generator/plane.h"
-#include "generator/box.h"
-#include "generator/sphere.h"
-#include "generator/cone.h"
-#include "generator/patch_model.h"
+#include "generator/models/plane.h"
+#include "generator/models/box.h"
+#include "generator/models/sphere.h"
+#include "generator/models/cone.h"
+#include "generator/models/patch_model.h"
 
 using std::cout, std::endl, std::string, std::ofstream, std::ifstream, std::tuple;
 
@@ -27,8 +27,15 @@ int main(int argc, char **argv)
         auto radius = std::stof(argv[2]);
         auto slices = std::stoi(argv[3]);
         auto stacks = std::stoi(argv[4]);
-        Sphere sphere(radius, slices, stacks);
-        sphere.writeToFile(argv[5]);
+        if (argc == 8) {
+            auto heightMap = std::string(argv[5]);
+            auto heightScale = std::stof(argv[6]);
+            Sphere sphere(radius, slices, stacks, heightMap, heightScale);
+            sphere.writeToFile(argv[7]);
+        } else {
+            Sphere sphere(radius, slices, stacks);
+            sphere.writeToFile(argv[5]);
+        }
     } else if (type == "cone") {
         auto radius = std::stof(argv[2]);
         auto height = std::stof(argv[3]);

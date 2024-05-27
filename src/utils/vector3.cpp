@@ -1,15 +1,26 @@
-#include <tuple>
 #include <cmath>
+#include "deps/tinyxml2.h"
 #include "utils/vector3.h"
 #include "utils/point3.h"
 
-using std::tuple;
-
-Vector3::Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
+using namespace tinyxml2;
 
 Vector3::Vector3(const Point3 &p) : x(p.x), y(p.y), z(p.z) {}
 
-Vector3::Vector3(const Point3 &p1, const Point3 &p2) : x(p2.x - p1.x), y(p2.y - p1.y), z(p2.z - p1.z) {}
+Vector3::Vector3(const Point3 &p1, const Point3 &p2)
+        : x(p2.x - p1.x), y(p2.y - p1.y), z(p2.z - p1.z) {}
+
+Vector3::Vector3(XMLElement *vectorElement)
+{
+    vectorElement->QueryFloatAttribute("x", &x);
+    vectorElement->QueryFloatAttribute("y", &y);
+    vectorElement->QueryFloatAttribute("z", &z);
+}
+
+Vector3 Vector3::polar(double radius, double alpha, double beta)
+{
+    return {radius * cos(beta) * sin(alpha), radius * sin(beta), radius * cos(beta) * cos(alpha)};
+}
 
 Vector3 Vector3::operator+(const Vector3 &v) const
 {
@@ -24,13 +35,7 @@ Vector3 Vector3::operator+=(const Vector3 &vector)
     return *this;
 }
 
-Vector3 Vector3::operator+(const tuple<float, float, float> &v) const
-{
-    auto [vx, vy, vz] = v;
-    return {x + vx, y + vy, z + vz};
-}
-
-Vector3 Vector3::operator*(float scalar) const
+Vector3 Vector3::operator*(double scalar) const
 {
     return {x * scalar, y * scalar, z * scalar};
 }
@@ -60,4 +65,10 @@ Vector3 Vector3::normalize(Vector3 v)
 Vector3 Vector3::cross(Vector3 v1, Vector3 v2)
 {
     return {v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x};
+}
+
+std::ostream &operator<<(std::ostream &os, const Vector3 &vector)
+{
+    os << '(' << vector.x << ", " << vector.y << ", " << vector.z << ')';
+    return os;
 }

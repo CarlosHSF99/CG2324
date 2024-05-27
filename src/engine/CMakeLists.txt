@@ -4,12 +4,24 @@ project(engine)
 
 add_executable(${PROJECT_NAME}
         main.cpp
-        group.cpp
-        transform.cpp
-        xml_world_loader.cpp
-        world.cpp
-        camera.cpp
-        window.cpp
+        scene/group.cpp
+        scene/world.cpp
+        scene/camera.cpp
+        scene/window.cpp
+        scene/model/model.cpp
+        scene/transform/timed_translate.cpp
+        scene/transform/translate.cpp
+        scene/transform/scale.cpp
+        scene/transform/timed_rotate.cpp
+        scene/transform/rotate.cpp
+        scene/model/color/color.cpp
+        scene/model/color/color_rgb.cpp
+        scene/model/vertex_buffers.cpp
+        scene/light/light.cpp
+        scene/light/directional_light.cpp
+        scene/light/spot_light.cpp
+        scene/light/point_light.cpp
+        scene/model/texture.cpp
 )
 
 find_package(OpenGL REQUIRED)
@@ -26,6 +38,10 @@ find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
 link_libraries(${GLEW_LIBRARIES})
 
+find_package(DevIL REQUIRED)
+include_directories(${IL_INCLUDE_DIR})
+link_libraries(${IL_LIBRARIES})
+
 target_link_libraries(
         ${PROJECT_NAME}
         utils
@@ -33,4 +49,5 @@ target_link_libraries(
         ${OPENGL_LIBRARIES}
         ${GLUT_LIBRARIES}
         ${GLEW_LIBRARIES}
+        ${IL_LIBRARIES}
 )

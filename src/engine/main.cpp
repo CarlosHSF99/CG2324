@@ -1,21 +1,12 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/glut.h>
-#include <cmath>
-#include "engine/world.h"
-#include "engine/xml_world_loader.h"
+#include <IL/il.h>
+#include "engine/scene/window.h"
+#include "engine/scene/world.h"
+#include "deps/tinyxml2.h"
 
-using std::cos, std::sin, std::sqrt, std::atan2, std::asin;
-
-void renderScene();
-
-void changeSize(int w, int h);
-
-void processNormalKeys(unsigned char key, int xx, int yy);
-
-void drawAxis();
-
-World world;
+using namespace tinyxml2;
 
 int main(int argc, char **argv)
 {
@@ -24,115 +15,61 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    world = XMLWorldLoader::load(argv[1]);
+    XMLDocument doc;
+    if (doc.LoadFile(argv[1]) != XML_SUCCESS) {
+        std::cerr << "Failed to load file." << std::endl;
+        return 1;
+    }
+
+    XMLElement *worldElement = doc.FirstChildElement("world");
+    if (!worldElement) {
+        return 1;
+    }
+
+    XMLElement *windowElement = worldElement->FirstChildElement("window");
+    if (!windowElement) {
+        return 1;
+    }
+
+    Window window(windowElement);
 
     // init GLUT and the window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-    glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - world.window.width) / 2,
-                           (glutGet(GLUT_SCREEN_HEIGHT) - world.window.height) / 2);
-    glutInitWindowSize(world.window.width, world.window.height);
-    glutCreateWindow(world.window.title);
+    glutInitWindowPosition(window.x, window.y);
+    glutInitWindowSize(window.width, window.height);
+    glutCreateWindow(argv[1]);
 
-    // required callback registry
-    glutDisplayFunc(renderScene);
-    glutReshapeFunc(changeSize);
-    glutIdleFunc(renderScene);
-    glutKeyboardFunc(processNormalKeys);
-
-    // init GLEW
-#ifndef __APPLE__
     glewInit();
-#endif
+
+    ilInit();
+    ilEnable(IL_ORIGIN_SET);
+    ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
+
+    static World world(worldElement);
+
+    // callback registry
+    glutDisplayFunc([]() { world.renderScene(); });
+    glutReshapeFunc([](int w, int h) { world.changeSize(w, h); });
+    glutIdleFunc([]() { world.renderScene(); });
+    glutKeyboardFunc([](unsigned char key, int xx, int yy) { world.processNormalKeys(key, xx, yy); });
 
     // OpenGL settings
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_RESCALE_NORMAL);
 
-    world.group.initBuffers();
+    // controls global ambient light
+    float amb[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     glutMainLoop();
 
     return 1;
-}
-
-void renderScene()
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    world.camera.place();
-
-    drawAxis();
-
-    world.draw();
-
-    glutSwapBuffers();
-}
-
-void changeSize(int w, int h)
-{
-    // Doesn't seem useful. Might be removed.
-    world.window.width = w;
-    world.window.height = h;
-
-    // Prevent a divide by zero, when window is too short
-    // (you can't make a window of zero width).
-    if (h == 0)
-        h = 1;
-
-    // Use the Projection Matrix
-    glMatrixMode(GL_PROJECTION);
-
-    // Reset Matrix
-    glLoadIdentity();
-
-    // Set the viewport to be the entire window
-    glViewport(0, 0, w, h);
-
-    // Set the correct perspective.
-    world.camera.setPerspective(w, h);
-
-    // Get Back to the ModelView
-    glMatrixMode(GL_MODELVIEW);
-}
-
-void processNormalKeys(unsigned char key, int xx, int yy)
-{
-    world.camera.reactKey(key, xx, yy);
-
-    switch (key) {
-        case 27: // Quit - ESC Key
-            exit(0);
-        default:
-            break;
-    }
-
-    glutPostRedisplay();
-}
-
-void drawAxis()
-{
-    // save current color
-    float currentColor[4];
-    glGetFloatv(GL_CURRENT_COLOR, currentColor);
-
-    glBegin(GL_LINES);
-    // X Axis in red
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(-100.0f, 0.0f, 0.0f);
-    glVertex3f(100.0f, 0.0f, 0.0f);
-    // Y Axis in Green
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(0.0f, -100.0f, 0.0f);
-    glVertex3f(0.0f, 100.0f, 0.0f);
-    // Z Axis in Blue
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.0f, 0.0f, -100.0f);
-    glVertex3f(0.0f, 0.0f, 100.0f);
-    glEnd();
-
-    // restore previous color
-    glColor4fv(currentColor);
 }

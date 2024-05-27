@@ -1,20 +1,29 @@
-#include <iostream>
+#include <cmath>
+#include "deps/tinyxml2.h"
 #include "utils/vector3.h"
 #include "utils/point3.h"
 
-using std::ostream, std::tuple;
+using std::ostream;
+using namespace tinyxml2;
 
-Point3::Point3(float x, float y, float z) : x(x), y(y), z(z) {}
+Point3::Point3(XMLElement *vectorElement)
+{
+    vectorElement->QueryFloatAttribute("x", &x);
+    vectorElement->QueryFloatAttribute("y", &y);
+    vectorElement->QueryFloatAttribute("z", &z);
+}
 
 Point3 Point3::operator+(const Vector3 &v) const
 {
     return {x + v.x, y + v.y, z + v.z};
 }
 
-Point3 Point3::operator+(const tuple<float, float, float> &v) const
+Point3 Point3::operator+=(const Vector3 &vector)
 {
-    auto [vx, vy, vz] = v;
-    return {x + vx, y + vy, z + vz};
+    x += vector.x;
+    y += vector.y;
+    z += vector.z;
+    return *this;
 }
 
 ostream &operator<<(ostream &os, const Point3 &point)
@@ -30,4 +39,9 @@ Point3 &Point3::operator=(Point3 const &other) noexcept
         std::construct_at(this, other);
     }
     return *this;
+}
+
+Point3 Point3::polar(double radius, double alpha, double beta)
+{
+    return {radius * cos(beta) * sin(alpha), radius * sin(beta), radius * cos(beta) * cos(alpha)};
 }
